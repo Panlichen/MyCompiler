@@ -1,7 +1,5 @@
 package minijava.typecheck.symboltable;
 
-import java.util.Hashtable;
-
 import minijava.syntaxtree.AllocationExpression;
 import minijava.syntaxtree.AndExpression;
 import minijava.syntaxtree.ArrayAllocationExpression;
@@ -49,13 +47,15 @@ import minijava.syntaxtree.TypeDeclaration;
 import minijava.syntaxtree.VarDeclaration;
 import minijava.syntaxtree.WhileStatement;
 
-public class EntryInfo {
-	
-	Identifier IDInfo;
-	
-	public Identifier getIDInfo()
+public class EntryInfoVariable extends EntryInfo{
+
+	Type varType;
+	public void setType(Type theType)
 	{
-		return this.IDInfo;
+		this.varType = theType;
 	}
-	
+	public Type getType()
+	{
+		return this.varType;
+	}
 }

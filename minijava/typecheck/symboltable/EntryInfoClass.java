@@ -1,7 +1,6 @@
 package minijava.typecheck.symboltable;
 
 import java.util.Hashtable;
-
 import minijava.syntaxtree.AllocationExpression;
 import minijava.syntaxtree.AndExpression;
 import minijava.syntaxtree.ArrayAllocationExpression;
@@ -49,13 +48,35 @@ import minijava.syntaxtree.TypeDeclaration;
 import minijava.syntaxtree.VarDeclaration;
 import minijava.syntaxtree.WhileStatement;
 
-public class EntryInfo {
+public class EntryInfoClass extends EntryInfo{
+
+	Hashtable<String, EntryInfoVariable> varTable;
+	Hashtable<String, EntryInfoMethod> mthdTable;
 	
-	Identifier IDInfo;
-	
-	public Identifier getIDInfo()
+	public void v_put(String name, EntryInfoVariable value)
 	{
-		return this.IDInfo;
+		if(this.varTable == null)
+		{
+			this.varTable = new Hashtable<String, EntryInfoVariable>();
+		}
+		this.varTable.put(name, value);
+	}
+	public EntryInfoVariable v_get(String key)
+	{
+		return this.varTable.get(key);
+	}
+	
+	public void m_put(String name, EntryInfoMethod value)
+	{
+		if(this.mthdTable == null)
+		{
+			this.mthdTable = new Hashtable<String, EntryInfoMethod>();
+		}
+		this.mthdTable.put(name, value);
+	}
+	public EntryInfoMethod m_get(String key)
+	{
+		return this.mthdTable.get(key);
 	}
 	
 }

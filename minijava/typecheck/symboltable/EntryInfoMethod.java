@@ -1,7 +1,6 @@
 package minijava.typecheck.symboltable;
 
 import java.util.Hashtable;
-
 import minijava.syntaxtree.AllocationExpression;
 import minijava.syntaxtree.AndExpression;
 import minijava.syntaxtree.ArrayAllocationExpression;
@@ -49,13 +48,53 @@ import minijava.syntaxtree.TypeDeclaration;
 import minijava.syntaxtree.VarDeclaration;
 import minijava.syntaxtree.WhileStatement;
 
-public class EntryInfo {
-	
-	Identifier IDInfo;
-	
-	public Identifier getIDInfo()
+
+public class EntryInfoMethod extends EntryInfo{
+
+	Type rtnType;
+	Hashtable<String, EntryInfoVariable> varTable;// symbol for vars and paras
+	Type[] paraType;//record the para list
+	int numParas;
+
+	public void setRtnType(Type theType)
 	{
-		return this.IDInfo;
+		this.rtnType = theType;
+	}
+	public Type getRtnType()
+	{
+		return this.rtnType;
+	}
+	
+	public void v_put(String name, EntryInfoVariable value)
+	{
+		if(this.varTable == null)
+		{
+			this.varTable = new Hashtable<String, EntryInfoVariable>();
+		}
+		this.varTable.put(name, value);
+	}
+	public EntryInfoVariable v_get(String key)
+	{
+		return this.varTable.get(key);
+	}
+	
+	public void addPara(int idx, Type paraType)
+	{
+		if(idx > 0 && idx < numParas)
+			this.paraType[idx] = paraType;
+	}
+	public Type[] getParaArray()
+	{
+		return this.paraType;
+	}
+	
+	public void set_numParas(int n)
+	{
+		this.numParas = n;
+	}
+	public int get_numparas()
+	{
+		return this.numParas;
 	}
 	
 }
