@@ -52,15 +52,42 @@ import minijava.syntaxtree.WhileStatement;
 public class EntryInfoMethod extends EntryInfo{
 
 	String sRtnType;
+	String sBelongClassName;
 	Hashtable<String, EntryInfoVariable> varTable;// symbol for vars and paras
 	String[] paraType;//record the para list
-	int numParas;
+	int paraNum = 0;
+	
+	/*for typecheck*/
+	int paraIdx;
+	public void init_para_idx()
+	{
+		this.paraIdx = 0;
+	}
+	public String next_para()
+	{
+		if(this.paraIdx >= this.paraNum) return null;
+		return paraType[paraIdx++];
+	}
+	public boolean para_all_matched()
+	{
+		return this.paraIdx == this.paraNum;
+	}
+	/*end*/
 
-	public void setRtnType(Type theType)
+	public void set_belong_class_name(String s)
+	{
+		this.sBelongClassName = s;
+	}
+	public String get_belong_class_name()
+	{
+		return this.sBelongClassName;
+	}
+	
+	public void set_rtn_type(Type theType)
 	{
 		this.sRtnType = Type2String.type_to_string(theType);
 	}
-	public String getRtnType()
+	public String get_rtn_type()
 	{
 		return this.sRtnType;
 	}
@@ -71,6 +98,11 @@ public class EntryInfoMethod extends EntryInfo{
 		{
 			this.varTable = new Hashtable<String, EntryInfoVariable>();
 		}
+		if(this.varTable.get(name) != null)
+		{
+			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: " + value.get_name() + "in method " + this.get_name());
+			//error recovery: we add the redefined variable, and it replaces the former one
+		}
 		this.varTable.put(name, value);
 	}
 	public EntryInfoVariable v_get(String key)
@@ -78,23 +110,56 @@ public class EntryInfoMethod extends EntryInfo{
 		return this.varTable.get(key);
 	}
 	
-	public void addPara(int idx, String paraType)
+	public void add_para(String paraType)
 	{
-		if(idx > 0 && idx < numParas)
-			this.paraType[idx] = paraType;
+		this.paraType[paraNum++] = paraType;
 	}
-	public String[] getParaArray()
+	public String[] get_para_array()
 	{
 		return this.paraType;
 	}
 	
-	public void set_numParas(int n)
+	public int get_num_paras()
 	{
-		this.numParas = n;
-	}
-	public int get_numparas()
-	{
-		return this.numParas;
+		return this.paraNum;
 	}
 	
+	
+	public Hashtable<String, EntryInfoVariable> get_var_table()
+	{
+		return this.varTable;
+	}
+	
+	public void add_member_vars(Hashtable<String, EntryInfoVariable> varTable)
+	{
+		for(String key : varTable.keySet())
+		{
+			if(this.v_get(key) == null)
+			{
+				this.v_put(key, varTable.get(key));
+			}
+		}
+	}
+	
+	public void check_undefined_class(SymbolTable topTable)
+	{
+		if(this.is_class_type(this.sRtnType))
+		{
+			if(topTable.c_get(sRtnType) == null)
+			{
+				ErrorPrinter.add_error(this.get_line_number(), "unddfined return type: " + this.sRtnType);
+			}
+		}
+		for(String key : this.varTable.keySet())
+		{
+			String type = this.v_get(key).get_type();
+			if(this.is_class_type(type))
+			{
+				if(topTable.c_get(type) == null)
+				{
+					ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undefined class: " + type);
+				}
+			}
+		}
+	}
 }

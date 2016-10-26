@@ -20,11 +20,28 @@ public class Main {
     		 * TODO: Implement your own Visitors and other classes.
     		 * 
     		 */
-    		SymbolTable topSymbolTable = new SymbolTable();
+    		SymbolTable topTable = new SymbolTable();
     		
     		VisitorBuildSymbolTable vbst = new VisitorBuildSymbolTable();
+    		VisitorCheckUndefinedRef vcud = new VisitorCheckUndefinedRef();
+    		VisitorCheckIncompatible vci = new VisitorCheckIncompatible();
     		
-    		root.accept(vbst, topSymbolTable);
+    		root.accept(vbst, topTable);
+    		topTable.check_undefined_class(topTable);
+    		topTable.check_inheritance_loop();
+
+    		root.accept(vcud, topTable);
+    		root.accept(vci, topTable);
+    		
+    		ErrorPrinter.print_all_error();
+    		
+    		if(ErrorPrinter.error_exists())
+    		{
+    			System.out.println("Type error");
+    		}
+    		else 
+    			System.out.println("Program type checked successfully");
+    		
     	}
     	catch(TokenMgrError e){
     		//Handle Lexical Errors

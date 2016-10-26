@@ -65,18 +65,59 @@ public class EntryInfo {
 	{
 		return this.IDInfo.f0.tokenImage;
 	}
+	public int get_line_number()
+	{
+		return this.IDInfo.f0.beginLine;
+	}
+	
+	public boolean is_class_type(String type)
+	{
+		return type != "int" && type != "int[]" && type != "boolean";//so the type should be a self-defined class, but it can be undefined
+	}
+	
+	public void check_undefined_class(SymbolTable topTable){}
+	public void check_inheritance_loop(){}
+	
+	
+	public void inherit_from_ancestors(SymbolTable topTable){}
+	
 
 	/*methods in SymbolTable.java*/
 	public void c_put(String name, EntryInfoClass value){}
 	public EntryInfoClass c_get(String key){return null;}
 	public void set_main_class(String name){}
 	public String get_main_class(){return null;}
-	public Hashtable<String, EntryInfoClass> get_symbol_table(){return null;}
+	static public Hashtable<String, EntryInfoClass> get_symbol_table(){return null;}
 
 	/*methods in EntryInfoClass.java*/
 	public void v_put(String name, EntryInfoVariable value){}
 	public EntryInfoVariable v_get(String key){return null;}
 	public void m_put(String name, EntryInfoMethod value){}
 	public EntryInfoMethod m_get(String key){return null;}
+	public void set_parent_class(String s){}
+	public String get_parent_class(){return null;}
+	public boolean has_parent(){return false;}
+	public Hashtable<String, EntryInfoVariable> get_var_table(){return null;}
+	public Hashtable<String, EntryInfoMethod> get_mthd_table(){return null;}
+	
+	/*methods in EntryInfoMethods.java*/
+	//public void v_put(String name, EntryInfoVariable value){}
+	//public EntryInfoVariable v_get(String key){return null;}
+	public void set_belong_class_name(String s){}
+	public String get_belong_class_name(){return null;}
+	public void add_member_vars(Hashtable<String, EntryInfoVariable> varTable){};
+	public void set_rtn_type(Type theType){}
+	public String get_rtn_type(){return null;}
+	public void add_para(String paraType){}
+	public String[] get_para_array(){return null;}
+	public int get_num_paras(){return 0;}
+	public void init_para_idx(){}
+	public String next_para(){return null;}
+	public boolean para_all_matched(){return false;}
+	
+	/*methods in EntryInfoVariable.java*/
+	public void set_type(Type theType){};
+	public String get_type(){return null;}
+	
 	
 }

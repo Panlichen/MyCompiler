@@ -50,11 +50,11 @@ import minijava.syntaxtree.WhileStatement;
 public class EntryInfoVariable extends EntryInfo{
 
 	String sVarType;
-	public void setType(Type theType)
+	public void set_type(Type theType)
 	{
 		this.sVarType = Type2String.type_to_string(theType);
 	}
-	public String getType()
+	public String get_type()
 	{
 		return this.sVarType;
 	}

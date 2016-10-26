@@ -2,7 +2,7 @@ package minijava.typecheck.symboltable;
 import minijava.syntaxtree.*;
 
 public class Type2String {
-	static String type_to_string(Type theType)
+	static public String type_to_string(Type theType)
 	{
 		switch (theType.f0.which)
 		{

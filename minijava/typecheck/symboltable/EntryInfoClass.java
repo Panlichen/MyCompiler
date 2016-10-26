@@ -53,12 +53,18 @@ public class EntryInfoClass extends EntryInfo{
 	Hashtable<String, EntryInfoVariable> varTable;
 	Hashtable<String, EntryInfoMethod> mthdTable;
 	String sParentClass;
+	int extendsParentsline;//the line number where the extends statement lies, it should be the same with or near the class define line
 	
 	public void v_put(String name, EntryInfoVariable value)
 	{
 		if(this.varTable == null)
 		{
 			this.varTable = new Hashtable<String, EntryInfoVariable>();
+		}
+		if(this.varTable.get(name) != null)
+		{
+			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: " + value.get_name() + "in class " + this.get_name());
+			//error recovery: we add the redefined variable, and it replaces the former one
 		}
 		this.varTable.put(name, value);
 	}
@@ -73,6 +79,11 @@ public class EntryInfoClass extends EntryInfo{
 		{
 			this.mthdTable = new Hashtable<String, EntryInfoMethod>();
 		}
+		if(this.mthdTable.get(name) != null)
+		{
+			ErrorPrinter.add_error(value.get_line_number(), "redefined method: " + value.get_name() + "in class " + this.get_name());
+			//error recovery: we add the redefined method, and it replaces the former one
+		}
 		this.mthdTable.put(name, value);
 	}
 	public EntryInfoMethod m_get(String key)
@@ -83,6 +94,7 @@ public class EntryInfoClass extends EntryInfo{
 	public void set_parent_class(String s)
 	{
 		this.sParentClass = s;
+		this.extendsParentsline = this.get_line_number();
 	}
 	public String get_parent_class()
 	{
@@ -91,5 +103,70 @@ public class EntryInfoClass extends EntryInfo{
 	public boolean has_parent()
 	{
 		return this.sParentClass != null;
+	}
+	
+	public Hashtable<String, EntryInfoMethod> get_mthd_table()
+	{
+		return this.mthdTable;
+	}
+	
+	public Hashtable<String, EntryInfoVariable> get_var_table()
+	{
+		return this.varTable;
+	}
+	
+	public void check_undefined_class(SymbolTable topTable)
+	{
+		if(this.has_parent())
+		{
+			if(topTable.c_get(this.sParentClass) == null)
+			{
+				ErrorPrinter.add_error(extendsParentsline, "undifined super class: " + this.sParentClass);
+			}
+		}
+		for(String key : this.varTable.keySet())
+		{
+			String varType = this.v_get(key).sVarType;
+			if(this.is_class_type(varType))
+			{
+				if(topTable.c_get(varType) == null)
+				{
+					ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undifined class found in member variables: " + varType);
+				}
+			}
+		}
+		for(String key : mthdTable.keySet())
+		{
+			this.m_get(key).check_undefined_class(topTable);
+		}
+	}
+	
+	public void inherit_from_ancestors(SymbolTable topTable)
+	{
+		String name = this.sParentClass;
+		while(name != null)
+		{
+			EntryInfoClass classInfo = topTable.c_get(name);
+			for(String key: classInfo.get_var_table().keySet())
+			{
+				if(this.v_get(key) == null)
+				{
+					this.v_put(key, classInfo.v_get(key));
+				}
+			}
+			for(String key: classInfo.get_mthd_table().keySet())
+			{
+				if(this.m_get(key) == null)
+				{
+					this.m_put(key, classInfo.m_get(key));
+				}
+			}
+			name = classInfo.get_parent_class();
+		}
+		
+		for(String key : this.mthdTable.keySet())
+		{
+			this.m_get(key).add_member_vars(varTable);
+		}
 	}
 }
