@@ -52,6 +52,7 @@ public class EntryInfoClass extends EntryInfo{
 
 	Hashtable<String, EntryInfoVariable> varTable;
 	Hashtable<String, EntryInfoMethod> mthdTable;
+	String sParentClass;
 	
 	public void v_put(String name, EntryInfoVariable value)
 	{
@@ -79,4 +80,16 @@ public class EntryInfoClass extends EntryInfo{
 		return this.mthdTable.get(key);
 	}
 	
+	public void set_parent_class(String s)
+	{
+		this.sParentClass = s;
+	}
+	public String get_parent_class()
+	{
+		return this.sParentClass;
+	}
+	public boolean has_parent()
+	{
+		return this.sParentClass != null;
+	}
 }

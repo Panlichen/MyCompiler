@@ -6,6 +6,10 @@ import minijava.TokenMgrError;
 import minijava.syntaxtree.Node;
 import minijava.visitor.GJDepthFirst;
 
+import minijava.syntaxtree.*;
+import minijava.typecheck.symboltable.*;
+import minijava.typecheck.visitor.*;
+
 
 public class Main { 
  
@@ -16,10 +20,11 @@ public class Main {
     		 * TODO: Implement your own Visitors and other classes.
     		 * 
     		 */
-    		GJDepthFirst v = new GJDepthFirst<Object,Object>() {
-    		};
-    		//Traverse the Abstract Grammar Tree
-    		root.accept(v,null);
+    		SymbolTable topSymbolTable = new SymbolTable();
+    		
+    		VisitorBuildSymbolTable vbst = new VisitorBuildSymbolTable();
+    		
+    		root.accept(vbst, topSymbolTable);
     	}
     	catch(TokenMgrError e){
     		//Handle Lexical Errors

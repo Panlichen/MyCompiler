@@ -53,9 +53,30 @@ public class EntryInfo {
 	
 	Identifier IDInfo;
 	
-	public Identifier getIDInfo()
+	public Identifier get_id_info()
 	{
 		return this.IDInfo;
 	}
+	public void set_id_info(Identifier nId)
+	{
+		this.IDInfo = nId;
+	}
+	public String get_name()
+	{
+		return this.IDInfo.f0.tokenImage;
+	}
+
+	/*methods in SymbolTable.java*/
+	public void c_put(String name, EntryInfoClass value){}
+	public EntryInfoClass c_get(String key){return null;}
+	public void set_main_class(String name){}
+	public String get_main_class(){return null;}
+	public Hashtable<String, EntryInfoClass> get_symbol_table(){return null;}
+
+	/*methods in EntryInfoClass.java*/
+	public void v_put(String name, EntryInfoVariable value){}
+	public EntryInfoVariable v_get(String key){return null;}
+	public void m_put(String name, EntryInfoMethod value){}
+	public EntryInfoMethod m_get(String key){return null;}
 	
 }

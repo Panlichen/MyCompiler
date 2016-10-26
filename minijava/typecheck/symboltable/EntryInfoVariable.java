@@ -49,13 +49,13 @@ import minijava.syntaxtree.WhileStatement;
 
 public class EntryInfoVariable extends EntryInfo{
 
-	Type varType;
+	String sVarType;
 	public void setType(Type theType)
 	{
-		this.varType = theType;
+		this.sVarType = Type2String.type_to_string(theType);
 	}
-	public Type getType()
+	public String getType()
 	{
-		return this.varType;
+		return this.sVarType;
 	}
 }

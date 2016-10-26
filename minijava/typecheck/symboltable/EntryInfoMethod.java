@@ -51,18 +51,18 @@ import minijava.syntaxtree.WhileStatement;
 
 public class EntryInfoMethod extends EntryInfo{
 
-	Type rtnType;
+	String sRtnType;
 	Hashtable<String, EntryInfoVariable> varTable;// symbol for vars and paras
-	Type[] paraType;//record the para list
+	String[] paraType;//record the para list
 	int numParas;
 
 	public void setRtnType(Type theType)
 	{
-		this.rtnType = theType;
+		this.sRtnType = Type2String.type_to_string(theType);
 	}
-	public Type getRtnType()
+	public String getRtnType()
 	{
-		return this.rtnType;
+		return this.sRtnType;
 	}
 	
 	public void v_put(String name, EntryInfoVariable value)
@@ -78,12 +78,12 @@ public class EntryInfoMethod extends EntryInfo{
 		return this.varTable.get(key);
 	}
 	
-	public void addPara(int idx, Type paraType)
+	public void addPara(int idx, String paraType)
 	{
 		if(idx > 0 && idx < numParas)
 			this.paraType[idx] = paraType;
 	}
-	public Type[] getParaArray()
+	public String[] getParaArray()
 	{
 		return this.paraType;
 	}
