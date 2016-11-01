@@ -127,7 +127,7 @@ public class VisitorCheckUnuse extends GJVoidDepthFirst<EntryInfo>{
 		
 		n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        n.f2.accept(this, argu); 
         n.f3.accept(this, argu);
         n.f4.accept(this, methodInfo);
         n.f5.accept(this, argu);
@@ -142,5 +142,51 @@ public class VisitorCheckUnuse extends GJVoidDepthFirst<EntryInfo>{
         this.check_var_flow(methodInfo);
 	}
 	
+	/**
+	* f0 -> Identifier()
+	* f1 -> "="
+	* f2 -> Expression()
+	* f3 -> ";"
+	*/	
+	public void visit(AssignmentStatement n, EntryInfo argu)
+	{
+		this.initializedVars.addElement(n.f0.f0.tokenImage);
+		
+		n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        n.f2.accept(this, argu);
+        n.f3.accept(this, argu);
+	}
 	
+	/**
+     * f0 -> Identifier()
+     * f1 -> "["
+     * f2 -> Expression()
+     * f3 -> "]"
+     * f4 -> "="
+     * f5 -> Expression()
+     * f6 -> ";"
+     */
+	//but it is too hard to locate which slot of the array is initialized, so i quit.
+	
+	/**
+     * f0 -> IntegerLiteral()
+     *       | TrueLiteral()
+     *       | FalseLiteral()
+     *       | Identifier()
+     *       | ThisExpression()
+     *       | ArrayAllocationExpression()
+     *       | AllocationExpression()
+     *       | NotExpression()
+     *       | BracketExpression()
+     */
+	public void visit(PrimaryExpression n, EntryInfo argu)
+	{
+		if(n.f0.which == 3)
+		{
+			Identifier idNode = (Identifier)n.f0.choice;
+			this.usedVars.addElement(idNode.f0.tokenImage);
+		}
+		n.f0.accept(this, argu);
+	}
 }

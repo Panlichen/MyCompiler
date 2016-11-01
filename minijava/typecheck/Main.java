@@ -25,6 +25,7 @@ public class Main {
     		VisitorBuildSymbolTable vbst = new VisitorBuildSymbolTable();
     		VisitorCheckUndefinedRef vcud = new VisitorCheckUndefinedRef();
     		VisitorCheckIncompatible vci = new VisitorCheckIncompatible();
+    		VisitorCheckUnuse vcu = new VisitorCheckUnuse();
     		
     		root.accept(vbst, topTable);
     		topTable.check_undefined_class(topTable);
@@ -32,8 +33,10 @@ public class Main {
 
     		root.accept(vcud, topTable);
     		root.accept(vci, topTable);
+    		root.accept(vcu, topTable);
     		
     		ErrorPrinter.print_all_error();
+    		ErrorPrinter.print_all_warning();
     		
     		if(ErrorPrinter.error_exists())
     		{

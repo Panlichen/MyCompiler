@@ -31,4 +31,12 @@ public class ErrorPrinter {
 			System.out.println(errors.elementAt(i));
 		}
 	}
+	public static void print_all_warning()
+	{
+		int sz = warnings.size();
+		for(int i = 0; i < sz; i++)
+		{
+			System.out.println(warnings.elementAt(i));
+		}
+	}
 }
