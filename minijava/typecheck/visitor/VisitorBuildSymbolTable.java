@@ -52,6 +52,7 @@ public class VisitorBuildSymbolTable extends GJVoidDepthFirst<EntryInfo>{
     	//then we need to manually build all things for the main method...
     	EntryInfoMethod mainMethodInfo = new EntryInfoMethod();
     	mainMethodInfo.set_id_info(new Identifier(n.f6));
+    	mainMethodInfo.set_rtn_type("void");
     	
     	mainClassInfo.m_put(mainMethodInfo.get_name(), mainMethodInfo);
     	

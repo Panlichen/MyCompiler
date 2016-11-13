@@ -55,6 +55,12 @@ public class EntryInfoClass extends EntryInfo{
 	String sParentClass;
 	int extendsParentsline;//the line number where the extends statement lies, it should be the same with or near the class define line
 	
+	public EntryInfoClass()
+	{
+		this.varTable = new Hashtable<String, EntryInfoVariable>();
+		this.mthdTable = new Hashtable<String, EntryInfoMethod>();
+	}
+	
 	public void v_put(String name, EntryInfoVariable value)
 	{
 		if(this.varTable == null)
@@ -70,7 +76,7 @@ public class EntryInfoClass extends EntryInfo{
 	}
 	public EntryInfoVariable v_get(String key)
 	{
-		return this.varTable.get(key);
+		return (this.varTable.get(key) == null ? null : this.varTable.get(key));
 	}
 	
 	public void m_put(String name, EntryInfoMethod value)
@@ -124,21 +130,23 @@ public class EntryInfoClass extends EntryInfo{
 				ErrorPrinter.add_error(extendsParentsline, "undifined super class: " + this.sParentClass);
 			}
 		}
-		for(String key : this.varTable.keySet())
-		{
-			String varType = this.v_get(key).sVarType;
-			if(this.is_class_type(varType))
+		if(this.varTable != null)
+			for(String key : this.varTable.keySet())
 			{
-				if(topTable.c_get(varType) == null)
+				String varType = this.v_get(key).sVarType;
+				if(this.is_class_type(varType))
 				{
-					ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undifined class found in member variables: " + varType);
+					if(topTable.c_get(varType) == null)
+					{
+						ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undifined class found in member variables: " + varType);
+					}
 				}
 			}
-		}
-		for(String key : mthdTable.keySet())
-		{
-			this.m_get(key).check_undefined_class(topTable);
-		}
+		if(this.mthdTable != null)
+			for (String key : mthdTable.keySet())
+			{
+				this.m_get(key).check_undefined_class(topTable);
+			}
 	}
 	
 	public void inherit_from_ancestors(SymbolTable topTable)
@@ -147,26 +155,29 @@ public class EntryInfoClass extends EntryInfo{
 		while(name != null)
 		{
 			EntryInfoClass classInfo = topTable.c_get(name);
-			for(String key: classInfo.get_var_table().keySet())
-			{
-				if(this.v_get(key) == null)
+			if(classInfo.get_var_table() != null)
+				for(String key: classInfo.get_var_table().keySet())
 				{
-					this.v_put(key, classInfo.v_get(key));
+					if(this.v_get(key) == null)
+					{
+						this.v_put(key, classInfo.v_get(key));
+					}
 				}
-			}
-			for(String key: classInfo.get_mthd_table().keySet())
-			{
-				if(this.m_get(key) == null)
+			if(classInfo.get_mthd_table() != null)
+				for(String key: classInfo.get_mthd_table().keySet())
 				{
-					this.m_put(key, classInfo.m_get(key));
+					if(this.m_get(key) == null)
+					{
+						this.m_put(key, classInfo.m_get(key));
+					}
 				}
-			}
 			name = classInfo.get_parent_class();
 		}
 		
-		for(String key : this.mthdTable.keySet())
-		{
-			this.m_get(key).add_member_vars(varTable);
-		}
+		if(this.mthdTable != null)
+			for(String key : this.mthdTable.keySet())
+			{
+				this.m_get(key).add_member_vars(varTable);
+			}
 	}
 }

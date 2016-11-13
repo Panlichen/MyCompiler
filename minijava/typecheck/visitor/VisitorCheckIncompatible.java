@@ -56,7 +56,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		EntryInfoClass classInfo = argu.c_get(argu.get_main_class());
 		
 		n.f0.accept(this, argu);
-		n.f1.accept(this, classInfo);
+		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
 		n.f4.accept(this, argu);
@@ -66,9 +66,9 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		n.f8.accept(this, argu);
 		n.f9.accept(this, argu);
 		n.f10.accept(this, argu);
-		n.f11.accept(this, classInfo);
-		n.f12.accept(this, classInfo);
-		n.f13.accept(this, classInfo);
+		n.f11.accept(this, argu);
+		n.f12.accept(this, argu);
+		n.f13.accept(this, argu);
 		n.f14.accept(this, classInfo);
 		n.f15.accept(this, argu);
 		n.f16.accept(this, argu);
@@ -614,11 +614,13 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	*/
 	public String visit(Identifier n, EntryInfo argu)
 	{
+		String _ret = null;
 		n.f0.accept(this, argu);
-		String _ret = argu.v_get(n.f0.tokenImage).get_type();
+		if(!(argu instanceof SymbolTable))
+			_ret = argu.v_get(n.f0.tokenImage).get_type();//Identifier as a variable
 		if(_ret == null)
 		{
-			if(SymbolTable.get_symbol_table().get(n.f0.tokenImage) != null)
+			if(SymbolTable.get_symbol_table().get(n.f0.tokenImage) != null)//Identifier as a class type
 			_ret = n.f0.tokenImage;
 		}
 		return _ret;

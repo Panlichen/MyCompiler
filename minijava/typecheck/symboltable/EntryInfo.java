@@ -72,7 +72,7 @@ public class EntryInfo {
 	
 	public boolean is_class_type(String type)
 	{
-		return type != "int" && type != "int[]" && type != "boolean";//so the type should be a self-defined class, but it can be undefined
+		return type != "int" && type != "int[]" && type != "boolean" && type != "void";//so the type should be a self-defined class, but it can be undefined
 	}
 	
 	public void check_undefined_class(SymbolTable topTable){}
@@ -107,6 +107,7 @@ public class EntryInfo {
 	public String get_belong_class_name(){return null;}
 	public void add_member_vars(Hashtable<String, EntryInfoVariable> varTable){};
 	public void set_rtn_type(Type theType){}
+	public void set_rtn_type(String sType){}//for the main class, we manually set the return type as "void".
 	public String get_rtn_type(){return null;}
 	public void add_para(String paraType){}
 	public String[] get_para_array(){return null;}

@@ -21,7 +21,7 @@ public class SymbolTable extends EntryInfo{
 	}
 	public EntryInfoClass c_get(String key)
 	{
-		return this.symbolTable.get(key);
+		return (this.symbolTable.get(key) == null ? null : this.symbolTable.get(key));
 	}
 
 	public String get_main_class()
@@ -40,7 +40,7 @@ public class SymbolTable extends EntryInfo{
 	
 	public void check_undefined_class(SymbolTable topTable)
 	{
-		for(String key : this.symbolTable.keySet())
+		for(String key : symbolTable.keySet())
 		{
 			this.c_get(key).check_undefined_class(topTable);
 		}

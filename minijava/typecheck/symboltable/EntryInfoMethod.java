@@ -57,6 +57,11 @@ public class EntryInfoMethod extends EntryInfo{
 	String[] paraType;//record the para list
 	int paraNum = 0;
 	
+	public EntryInfoMethod()
+	{
+		this.varTable = new Hashtable<String, EntryInfoVariable>();
+	}
+	
 	/*for typecheck*/
 	int paraIdx;
 	public void init_para_idx()
@@ -86,6 +91,10 @@ public class EntryInfoMethod extends EntryInfo{
 	public void set_rtn_type(Type theType)
 	{
 		this.sRtnType = Type2String.type_to_string(theType);
+	}
+	public void set_rtn_type(String sType)
+	{
+		this.sRtnType = sType;
 	}
 	public String get_rtn_type()
 	{
@@ -132,13 +141,14 @@ public class EntryInfoMethod extends EntryInfo{
 	
 	public void add_member_vars(Hashtable<String, EntryInfoVariable> varTable)
 	{
-		for(String key : varTable.keySet())
-		{
-			if(this.v_get(key) == null)
+		if(this.varTable != null)
+			for(String key : this.varTable.keySet())
 			{
-				this.v_put(key, varTable.get(key));
+				if(this.v_get(key) == null)
+				{
+					this.v_put(key, varTable.get(key));
+				}
 			}
-		}
 	}
 	
 	public void check_undefined_class(SymbolTable topTable)
@@ -150,16 +160,17 @@ public class EntryInfoMethod extends EntryInfo{
 				ErrorPrinter.add_error(this.get_line_number(), "unddfined return type: " + this.sRtnType);
 			}
 		}
-		for(String key : this.varTable.keySet())
-		{
-			String type = this.v_get(key).get_type();
-			if(this.is_class_type(type))
+		if(this.varTable != null)
+			for(String key : this.varTable.keySet())
 			{
-				if(topTable.c_get(type) == null)
+				String type = this.v_get(key).get_type();
+				if(this.is_class_type(type))
 				{
-					ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undefined class: " + type);
+					if(topTable.c_get(type) == null)
+					{
+						ErrorPrinter.add_error(this.v_get(key).get_line_number(), "undefined class: " + type);
+					}
 				}
 			}
-		}
 	}
 }
