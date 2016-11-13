@@ -1,5 +1,8 @@
 package minijava.typecheck;
 
+import java.io.FileInputStream;
+import java.util.Scanner;
+
 import minijava.MiniJavaParser;
 import minijava.ParseException;
 import minijava.TokenMgrError;
@@ -15,7 +18,10 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		Node root = new MiniJavaParser(System.in).Goal();
+    		//Scanner input = new Scanner(new File("D:\\PKU\\compile_practice\\testCases\\trivial1.java"));
+    		//Node root = new MiniJavaParser(new InputStream(input)).Goal();
+    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\trivial1.java")).Goal();
+    		//System.out.println("hello world.");
     		/*
     		 * TODO: Implement your own Visitors and other classes.
     		 * 
