@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
     	try {
     		//Scanner input = new Scanner(new File("D:\\PKU\\compile_practice\\testCases\\trivial1.java"));
-    		//Node root = new MiniJavaParser(new InputStream(input)).Goal();
+    		//Node root = new MiniJavaParser(System.in).Goal();
     		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\TreeVisitor-error.java")).Goal();
     		//System.out.println("hello world.");
     		/*
