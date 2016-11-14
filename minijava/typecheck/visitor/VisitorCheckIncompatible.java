@@ -16,7 +16,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		}
 		if((argu.is_class_type(type1) && !argu.is_class_type(type2)) || (!argu.is_class_type(type1) && argu.is_class_type(type2)))
 			return false;
-		else if(argu.is_class_type(type1) && argu.is_class_type(type2))//可以把子类的对象赋给父类。不会用英文说。。
+		else if(argu.is_class_type(type1) && argu.is_class_type(type2))//可以把子类的对象赋给父类。不会用英文说。。type1 can be father of type2
 		{
 			String name = type2;
 			while(name != null)
@@ -156,7 +156,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String rtnTypeReal = n.f10.accept(this, methodInfo);
 		if(!this.is_match(argu, rtnTypeDef, rtnTypeReal))
 		{
-			ErrorPrinter.add_error(n.f2.f0.beginLine, "in method " +  n.f2.f0.tokenImage + ", the return expression is not compatible as defined.");
+			ErrorPrinter.add_error(n.f2.f0.beginLine, "in method \"" +  n.f2.f0.tokenImage + "\", the return expression is not compatible with defined.");
 		}
 		n.f11.accept(this, argu);
 		n.f12.accept(this, argu);

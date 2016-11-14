@@ -116,6 +116,7 @@ public class VisitorBuildSymbolTable extends GJVoidDepthFirst<EntryInfo>{
     {
     	EntryInfoClass classInfo = new EntryInfoClass();
     	classInfo.set_id_info(n.f1);
+    	classInfo.set_parent_class(n.f3.f0.tokenImage);//bug fix : silly me...test56
     	
     	argu.c_put(classInfo.get_name(), classInfo);
     	
