@@ -395,7 +395,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String rightType = n.f2.accept(this, argu);
 		if(!leftType.equals("int") || !rightType.equals("int"))
 		{
-			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"<\" must be of boolean type.");
+			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"<\" must be of int type.");
 		}
 		return "boolean";
 	}
@@ -412,7 +412,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String rightType = n.f2.accept(this, argu);
 		if(!leftType.equals("int") || !rightType.equals("int"))
 		{
-			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"+\" must be of boolean type.");
+			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"+\" must be of int type.");
 		}
 		return "int";
 	}
@@ -429,7 +429,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String rightType = n.f2.accept(this, argu);
 		if(!leftType.equals("int") || !rightType.equals("int"))
 		{
-			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"-\" must be of boolean type.");
+			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"-\" must be of int type.");
 		}
 		return "int";
 	}
@@ -446,7 +446,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String rightType = n.f2.accept(this, argu);
 		if(!leftType.equals("int") || !rightType.equals("int"))
 		{
-			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"*\" must be of boolean type.");
+			ErrorPrinter.add_error(n.f1.beginLine, "the expression beside \"*\" must be of int type.");
 		}
 		return "int";
 	}
@@ -505,14 +505,15 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	public String visit(MessageSend n, EntryInfo argu)
 	{
 		String classType = n.f0.accept(this, argu);
-		if(!argu.is_class_type(classType))
+		if(classType != null && !argu.is_class_type(classType))//bug fix : TreeVisitor-error.java line #340
 		{
 			ErrorPrinter.add_error(n.f1.beginLine, "the expression should be a instance of a class.");
 			return null;
 		}
 		n.f1.accept(this, argu);
-		
-		EntryInfoMethod methodInfo = SymbolTable.symbolTable.get(classType).m_get(n.f2.f0.tokenImage);//should find the method definition in the class PrimaryExpression identifies
+		EntryInfoMethod methodInfo = null;
+		if(classType != null)//bug fix : TreeVisitor-error.java line #340
+			methodInfo = SymbolTable.symbolTable.get(classType).m_get(n.f2.f0.tokenImage);//should find the method definition in the class PrimaryExpression identifier
 		
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
@@ -521,9 +522,11 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 			return null;
 		
 		this.messageTable.push(methodInfo);
+		methodInfo.init_para_idx();
 		n.f4.accept(this, argu);
 		if(!methodInfo.para_all_matched())
-			ErrorPrinter.add_error(n.f1.beginLine, "fail to call " + n.f2.f0.tokenImage +" : parameters unmatch.");
+			ErrorPrinter.add_error(n.f1.beginLine, "fail to call \"" + n.f2.f0.tokenImage +"\" : the number of parameters unmatch.");
+			//bug fix : test88, here can only test whether the number of parameters is right  
 		this.messageTable.pop();
 		
 		n.f5.accept(this, argu);
@@ -544,7 +547,27 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String properType = this.messageTable.lastElement().next_para();
 		if(type != null && (properType == null || !this.is_match(this.messageTable.lastElement(), properType, type)))
 		{
-			ErrorPrinter.add_error(this.messageTable.lastElement().get_line_number(), "fail to call " +this.messageTable.lastElement().get_name() +" : parameters unmatch.");
+			int lineNumber;
+			if(n.f0.f0.which <= 7)
+			{
+				AndExpression tempNode = (AndExpression)n.f0.f0.choice;
+				lineNumber = tempNode.f1.beginLine;
+			}
+			else
+			{
+				PrimaryExpression tempNode = (PrimaryExpression)n.f0.f0.choice;
+				if(tempNode.f0.which == 1 || tempNode.f0.which == 3)
+				{
+					Identifier tempNode2 = (Identifier)tempNode.f0.choice;
+					lineNumber = tempNode2.f0.beginLine;
+				}
+				else
+				{
+					TrueLiteral tempNode3 = (TrueLiteral)tempNode.f0.choice;
+					lineNumber = tempNode3.f0.beginLine;
+				}
+			}//bug fix : test88, change the line number to where the invoke happens, kind of troublesome 
+			ErrorPrinter.add_error(lineNumber, "fail to call \"" +this.messageTable.lastElement().get_name() +"\" : parameter unmatch.");
 		}
 		n.f1.accept(this, argu);
 		return null;
@@ -561,7 +584,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String properType = this.messageTable.lastElement().next_para();
 		if(type != null && (properType == null || !this.is_match(this.messageTable.lastElement(), properType, type)))
 		{
-			ErrorPrinter.add_error(this.messageTable.lastElement().get_line_number(), "fail to call " +this.messageTable.lastElement().get_name() +" : parameters unmatch.");
+			ErrorPrinter.add_error(n.f0.beginLine, "fail to call \"" +this.messageTable.lastElement().get_name() +"\" : parameter unmatch.");
 		}
 		return null;
 	}

@@ -69,7 +69,7 @@ public class EntryInfoClass extends EntryInfo{
 		}
 		if(this.varTable.get(name) != null)
 		{
-			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: " + value.get_name() + "in class " + this.get_name());
+			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: \"" + value.get_name() + "\" in class \"" + this.get_name() + "\"");
 			//error recovery: we add the redefined variable, and it replaces the former one
 		}
 		this.varTable.put(name, value);
@@ -127,7 +127,7 @@ public class EntryInfoClass extends EntryInfo{
 		{
 			if(topTable.c_get(this.sParentClass) == null)
 			{
-				ErrorPrinter.add_error(extendsParentsline, "undifined super class: " + this.sParentClass);
+				ErrorPrinter.add_error(extendsParentsline, "undifined super class: \"" + this.sParentClass + "\"");
 			}
 		}
 		if(this.varTable != null)

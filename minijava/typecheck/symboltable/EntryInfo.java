@@ -1,6 +1,7 @@
 package minijava.typecheck.symboltable;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 import minijava.syntaxtree.AllocationExpression;
 import minijava.syntaxtree.AndExpression;
@@ -71,8 +72,8 @@ public class EntryInfo {
 	}
 	
 	public boolean is_class_type(String type)
-	{
-		return type != "int" && type != "int[]" && type != "boolean" && type != "void";//so the type should be a self-defined class, but it can be undefined
+	{//bug fix : TreeVisitor-error.java line #340
+		return type != null && type != "int" && type != "int[]" && type != "boolean" && type != "void";//so the type should be a self-defined class, but it can be undefined
 	}
 	
 	public void check_undefined_class(SymbolTable topTable){}
@@ -110,7 +111,7 @@ public class EntryInfo {
 	public void set_rtn_type(String sType){}//for the main class, we manually set the return type as "void".
 	public String get_rtn_type(){return null;}
 	public void add_para(String paraType){}
-	public String[] get_para_array(){return null;}
+	public Vector<String> get_para_array(){return null;}
 	public int get_num_paras(){return 0;}
 	public void init_para_idx(){}
 	public String next_para(){return null;}

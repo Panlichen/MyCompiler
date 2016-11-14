@@ -139,23 +139,35 @@ public class VisitorCheckUndefinedRef extends GJVoidDepthFirst<EntryInfo>{
 		if(n.f0.f0.which == 3)//invokes other class' method, both the class and method can be undefined
 		{
 			Identifier classInstanceIdentifier = (Identifier)n.f0.f0.choice;
-				//bug fix : the identifier in PrimaryExpression is not the type name of a class, but the name of a instance of the class.
-			String className = argu.v_get(classInstanceIdentifier.f0.tokenImage).get_type();
-			if(argu.is_class_type(className) && SymbolTable.get_symbol_table().get(className) == null)
+				//bug fix : the identifier in PrimaryExpression is not the type name of a class, but the name of a this identifier of the class.
+			
+			/*bug fix begin : TreeVisitor-error line #340*/
+			EntryInfoVariable tempVariableInfo = argu.v_get(classInstanceIdentifier.f0.tokenImage);
+			String className;
+			if(tempVariableInfo == null)
+			{
+				className = null;
+			}
+			else
+			{
+				className = tempVariableInfo.get_type();
+			}
+			/*bug fix end : TreeVisitor-error line #340*/
+			if(className != null && argu.is_class_type(className) && SymbolTable.get_symbol_table().get(className) == null)
 				//bug fix : test20
 			{
 				ErrorPrinter.add_error(n.f2.f0.beginLine, className + " is not a defined class.");
 			}
-			else if(SymbolTable.get_symbol_table().get(className).m_get(mthdName) == null)
+			else if(className != null && SymbolTable.get_symbol_table().get(className).m_get(mthdName) == null)
 			{
-				ErrorPrinter.add_error(n.f2.f0.beginLine, className + "does not have the method \"" + mthdName + "\".");
+				ErrorPrinter.add_error(n.f2.f0.beginLine, "\"" + className + "\" does not have the method \"" + mthdName + "\".");
 			}
 		}
 		else if(n.f0.f0.which == 4)//invokes this.f, the method can be undefined
 		{
 			if(SymbolTable.get_symbol_table().get(argu.get_belong_class_name()).m_get(mthdName) == null)
 			{
-				ErrorPrinter.add_error(n.f2.f0.beginLine, argu.get_belong_class_name() + "does not have the method \"" + mthdName + "\".");
+				ErrorPrinter.add_error(n.f2.f0.beginLine, "\"" + argu.get_belong_class_name() + "\" does not have the method \"" + mthdName + "\".");
 			}
 		}
 		
@@ -187,7 +199,7 @@ public class VisitorCheckUndefinedRef extends GJVoidDepthFirst<EntryInfo>{
 			
 			if(argu.v_get(varName) == null)
 			{
-				ErrorPrinter.add_error(varIdentifier.f0.beginLine, "the variable \" " + varName + "\" is undefined.");
+				ErrorPrinter.add_error(varIdentifier.f0.beginLine, "the variable \"" + varName + "\" is undefined.");
 			}
 		}
 		n.f0.accept(this, argu);

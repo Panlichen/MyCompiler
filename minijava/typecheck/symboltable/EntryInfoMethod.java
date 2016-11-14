@@ -1,6 +1,8 @@
 package minijava.typecheck.symboltable;
 
 import java.util.Hashtable;
+import java.util.Vector;
+
 import minijava.syntaxtree.AllocationExpression;
 import minijava.syntaxtree.AndExpression;
 import minijava.syntaxtree.ArrayAllocationExpression;
@@ -54,12 +56,12 @@ public class EntryInfoMethod extends EntryInfo{
 	String sRtnType;
 	String sBelongClassName;
 	Hashtable<String, EntryInfoVariable> varTable;// symbol for vars and paras
-	String[] paraType;//record the para list
-	int paraNum = 0;
+	Vector<String> paraType;//record the para list
 	
 	public EntryInfoMethod()
 	{
 		this.varTable = new Hashtable<String, EntryInfoVariable>();
+		this.paraType = new Vector<String>();
 	}
 	
 	/*for typecheck*/
@@ -70,12 +72,12 @@ public class EntryInfoMethod extends EntryInfo{
 	}
 	public String next_para()
 	{
-		if(this.paraIdx >= this.paraNum) return null;
-		return paraType[paraIdx++];
+		if(this.paraIdx >= this.paraType.size()) return null;
+		return paraType.elementAt(this.paraIdx++);
 	}
 	public boolean para_all_matched()
 	{
-		return this.paraIdx == this.paraNum;
+		return this.paraIdx == this.paraType.size();
 	}
 	/*end*/
 
@@ -109,7 +111,7 @@ public class EntryInfoMethod extends EntryInfo{
 		}
 		if(this.varTable.get(name) != null)
 		{
-			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: " + value.get_name() + "in method " + this.get_name());
+			ErrorPrinter.add_error(value.get_line_number(), "redefined variable: \"" + value.get_name() + "\" in class \"" + this.get_name() + "\"");
 			//error recovery: we add the redefined variable, and it replaces the former one
 		}
 		this.varTable.put(name, value);
@@ -121,16 +123,16 @@ public class EntryInfoMethod extends EntryInfo{
 	
 	public void add_para(String paraType)
 	{
-		this.paraType[paraNum++] = paraType;
+		this.paraType.addElement(paraType);
 	}
-	public String[] get_para_array()
+	public Vector<String> get_para_array()
 	{
 		return this.paraType;
 	}
 	
 	public int get_num_paras()
 	{
-		return this.paraNum;
+		return this.paraType.size();
 	}
 	
 	

@@ -20,7 +20,7 @@ public class Main {
     	try {
     		//Scanner input = new Scanner(new File("D:\\PKU\\compile_practice\\testCases\\trivial1.java"));
     		//Node root = new MiniJavaParser(new InputStream(input)).Goal();
-    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\test70.java")).Goal();
+    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\TreeVisitor-error.java")).Goal();
     		//System.out.println("hello world.");
     		/*
     		 * TODO: Implement your own Visitors and other classes.
