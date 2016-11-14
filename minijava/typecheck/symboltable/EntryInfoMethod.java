@@ -141,8 +141,8 @@ public class EntryInfoMethod extends EntryInfo{
 	
 	public void add_member_vars(Hashtable<String, EntryInfoVariable> varTable)
 	{
-		if(this.varTable != null)
-			for(String key : this.varTable.keySet())
+		if(varTable != null)
+			for(String key : varTable.keySet())
 			{
 				if(this.v_get(key) == null)
 				{

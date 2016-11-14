@@ -142,7 +142,6 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	public String visit(MethodDeclaration n, EntryInfo argu)//here argu should be an EntryInfoClass
 	{
 		EntryInfoMethod methodInfo = argu.m_get(n.f2.f0.tokenImage);
-		String _ret = null;
 		
 		n.f0.accept(this, argu);
 		String rtnTypeDef = n.f1.accept(this, methodInfo);
@@ -161,7 +160,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		}
 		n.f11.accept(this, argu);
 		n.f12.accept(this, argu);
-		return _ret;
+		return rtnTypeReal;
 	}
 	
 	/**
@@ -230,9 +229,11 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	{
 		n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
-		String leftType = argu.v_get(n.f0.f0.tokenImage).get_type();
+		String leftType = (argu.v_get(n.f0.f0.tokenImage) == null ?
+				null : argu.v_get(n.f0.f0.tokenImage).get_type());
 		String rightType = n.f2.accept(this, argu);
-		if(!is_match(argu, leftType, rightType))
+			//bug fix : test17 in case that one of the operand is undefined  
+		if(!(leftType == null || rightType == null) && !is_match(argu, leftType, rightType))
 		{
 			ErrorPrinter.add_error(n.f0.f0.beginLine, "the assigment is not compatiable with the variable \"" + n.f0.f0.tokenImage + "\".");
 		}
@@ -253,9 +254,9 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	public String visit(ArrayAssignmentStatement n, EntryInfo argu)
 	{
 		String IdentifierType = argu.v_get(n.f0.f0.tokenImage).get_type();
-		if(!IdentifierType.equals("int"))
+		if(!IdentifierType.equals("int[]"))
 		{
-			ErrorPrinter.add_error(n.f0.f0.beginLine, "you can only use int[] for arrays.");
+			ErrorPrinter.add_error(n.f0.f0.beginLine, "you can only use int[] for array assignment.");
 		}
 		
 		n.f0.accept(this, argu);
@@ -339,7 +340,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		String type = n.f2.accept(this, argu);
-		if(!type.equals("int"))
+		if(type != null && !type.equals("int"))//bug fix : in test16.java, the "op" is an undefined variable.  
 		{
 			ErrorPrinter.add_error(n.f0.beginLine, "the printed value must be of int type.");
 		}
@@ -459,9 +460,9 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	public String visit(ArrayLookup n, EntryInfo argu)
 	{
 		String indentifierType = n.f0.accept(this, argu);
-		if(!indentifierType.equals("int"))
+		if(!indentifierType.equals("int[]"))
 		{
-			ErrorPrinter.add_error(n.f1.beginLine, "you can only use int[] for arrays.");
+			ErrorPrinter.add_error(n.f1.beginLine, "you can only use int[] for array lookup.");
 		}
 		
 		n.f1.accept(this, argu);
@@ -511,7 +512,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		}
 		n.f1.accept(this, argu);
 		
-		EntryInfoMethod methodInfo = argu.m_get(n.f2.f0.tokenImage);
+		EntryInfoMethod methodInfo = SymbolTable.symbolTable.get(classType).m_get(n.f2.f0.tokenImage);//should find the method definition in the class PrimaryExpression identifies
 		
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
@@ -616,7 +617,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 	{
 		String _ret = null;
 		n.f0.accept(this, argu);
-		if(!(argu instanceof SymbolTable))
+		if(!(argu instanceof SymbolTable) && argu.v_get(n.f0.tokenImage) != null)
 			_ret = argu.v_get(n.f0.tokenImage).get_type();//Identifier as a variable
 		if(_ret == null)
 		{
@@ -650,7 +651,7 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		String idxType = n.f3.accept(this, argu);
 		if(!idxType.equals("int"))
 		{
-			ErrorPrinter.add_error(n.f0.beginLine, "you can only use integers for array indexes.");
+			ErrorPrinter.add_error(n.f0.beginLine, "you can only use integers for array length.");
 		}
 		n.f4.accept(this, argu);
 		
@@ -670,7 +671,8 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
 		
-		return n.f1.f0.tokenImage;
+		return (SymbolTable.symbolTable.get(n.f1.f0.tokenImage) == null ? null : n.f1.f0.tokenImage);
+		//bug fix : test29, if a class is undefined, its constructor's return type should be null.
 	}
 	
 	/**

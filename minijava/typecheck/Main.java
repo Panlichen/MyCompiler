@@ -20,7 +20,7 @@ public class Main {
     	try {
     		//Scanner input = new Scanner(new File("D:\\PKU\\compile_practice\\testCases\\trivial1.java"));
     		//Node root = new MiniJavaParser(new InputStream(input)).Goal();
-    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\trivial1.java")).Goal();
+    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\test56.java")).Goal();
     		//System.out.println("hello world.");
     		/*
     		 * TODO: Implement your own Visitors and other classes.
@@ -29,7 +29,7 @@ public class Main {
     		SymbolTable topTable = new SymbolTable();
     		
     		VisitorBuildSymbolTable vbst = new VisitorBuildSymbolTable();
-    		VisitorCheckUndefinedRef vcud = new VisitorCheckUndefinedRef();
+    		VisitorCheckUndefinedRef vcudr = new VisitorCheckUndefinedRef();
     		VisitorCheckIncompatible vci = new VisitorCheckIncompatible();
     		VisitorCheckUnuse vcu = new VisitorCheckUnuse();
     		
@@ -37,9 +37,9 @@ public class Main {
     		topTable.check_undefined_class(topTable);
     		topTable.check_inheritance_loop();
 
-    		root.accept(vcud, topTable);
+    		root.accept(vcudr, topTable);
     		root.accept(vci, topTable);
-    		root.accept(vcu, topTable);
+    		//root.accept(vcu, topTable);
     		
     		ErrorPrinter.print_all_error();
     		ErrorPrinter.print_all_warning();
