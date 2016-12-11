@@ -2,15 +2,29 @@ package minijava.minijava2piglet.symboltablem2p;
 
 import java.util.Vector;
 import minijava.typecheck.symboltable.*;
+import minijava.minijava2piglet.codesketch.*;
 
 public class EntryInfoMethodM2P extends EntryInfoMethod{
 	Vector<String> localDefinedVariables;
 	Vector<String> parameters;
+	VariableZone variableZone;
 	
 	public EntryInfoMethodM2P()
 	{
+		super();
 		this.localDefinedVariables = new Vector<String>();
 		this.parameters = new Vector<String>();
+	}
+	
+	public void v_put(String name, EntryInfoVariable value)
+	{
+		super.v_put(name, value);
+		this.variableZone.add_variable(name);
+	}
+	
+	public VariableZone get_variable_zone()
+	{
+		return this.variableZone;
 	}
 	
 	public void add_local_defined_variable(String name)
@@ -22,6 +36,17 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 		return this.localDefinedVariables;
 	}
 	
+	public int get_num_local_defined_variable()
+	{
+		return this.localDefinedVariables.size();
+	}
+	//public int get_num_paras(){}  already implemented
+	public int get_num_variable()
+	{
+		return this.get_variable_zone().get_num_variable();
+	}
+	
+	
 	public void add_parameter(String name)
 	{
 		this.localDefinedVariables.add(name);
@@ -29,6 +54,27 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 	public Vector<String> get_all_parameters()
 	{
 		return this.parameters;
+	}
+	
+	public PigletCodeSet get_variable_info(String varName, ResourceManager r)
+	{
+		PigletCodeSet ret = new PigletCodeSet();
+		if(this.localDefinedVariables.contains(varName) || this.parameters.contains(varName))
+		{
+			ret.set_temp_address(new PigletCode("TEMP " + (this.variableZone.get_variable_offset(varName) + 1)));
+			ret.set_memory_address(null);
+		}
+		else
+		{
+			PigletCode tempAddress = new PigletCode(r.get_new_temp());
+			EntryInfoClassM2P classInfo = SymbolTableM2P.symbolTableM2P.get(this.get_belong_class_name());
+			PigletCode memoryAddress = new PigletCode("TEMP 0 " + 4 * (classInfo.get_variable_zone().get_variable_offset(varName) + 1));
+			ret.emit("HLOAD " + tempAddress + " " + memoryAddress);
+			ret.set_memory_address(memoryAddress);
+			ret.set_temp_address(tempAddress);
+		}
+		ret.set_value_type(this.v_get(varName).get_type());
+		return ret;
 	}
 	
 }
