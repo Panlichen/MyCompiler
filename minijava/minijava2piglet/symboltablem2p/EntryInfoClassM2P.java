@@ -27,17 +27,17 @@ public class EntryInfoClassM2P extends EntryInfoClass{
 		return this.methodZone;
 	}
 	
-	public void v_put(String name, EntryInfoVariable value)
+	public void v_put_m2p(String name, EntryInfoVariable value)
 	{
 		super.v_put(name, value);
 		this.variableZone.add_variable(name);
 	}
 	public int get_num_member_variable()
 	{
-		return this.get_variable_zone().get_num_variable();
+		return this.get_variable_zone().get_num_local_variable();
 	}
 	
-	public void m_put(String name, EntryInfoMethodM2P value)
+	public void m_put_m2p(String name, EntryInfoMethodM2P value)
 	{
 		this.mthdTableM2P.put(name, value);
 	}
@@ -48,7 +48,7 @@ public class EntryInfoClassM2P extends EntryInfoClass{
 	}
 
 	
-	public EntryInfoMethodM2P m_get(String key)
+	public EntryInfoMethodM2P m_get_m2p(String key)
 	{
 		return this.mthdTableM2P.get(key);
 	}
@@ -63,21 +63,21 @@ public class EntryInfoClassM2P extends EntryInfoClass{
 		String name = this.get_parent_class();
 		while(name != null)
 		{
-			EntryInfoClassM2P classInfo = topTable.c_get(name);
+			EntryInfoClassM2P classInfo = topTable.c_get_m2p(name);
 			if(classInfo.get_var_table() != null)
 				for(String key: classInfo.get_var_table().keySet())
 				{
 					if(this.v_get(key) == null)
 					{
-						this.v_put(key, classInfo.v_get(key));
+						this.v_put_m2p(key, classInfo.v_get(key));
 					}
 				}
-			if(classInfo.get_mthd_table() != null)
-				for(String key: classInfo.get_mthd_table().keySet())
+			if(classInfo.get_mthd_table_m2p() != null)
+				for(String key: classInfo.get_mthd_table_m2p().keySet())
 				{
-					if(this.m_get(key) == null)
+					if(this.m_get_m2p(key) == null)
 					{
-						this.m_put(key, classInfo.m_get(key));
+						this.m_put_m2p(key, classInfo.m_get_m2p(key));
 						this.m_zone_put(key, name + "_" + key);
 					}
 				}
@@ -87,7 +87,7 @@ public class EntryInfoClassM2P extends EntryInfoClass{
 		if(this.get_mthd_table_m2p() != null)
 			for(String key : this.get_mthd_table_m2p().keySet())
 			{
-				this.m_get(key).add_member_vars(this.get_var_table());
+				this.m_get_m2p(key).add_member_vars(this.get_var_table());
 			}
 	}
 	

@@ -30,7 +30,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	@Override
 	public String get_new_label()
 	{
-		return "__label__" + this.labelIndex++;
+		return "_label_" + this.labelIndex++ + "_";
 	}
 	@Override
 	public String get_new_temp()
@@ -143,7 +143,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	public PigletCodeAbstract visit(ClassDeclaration n, EntryInfo argu)
 	{
 		PigletCodeAbstract ret = null;
-		EntryInfoClassM2P classInfo = (EntryInfoClassM2P) argu.c_get(n.f1.f0.tokenImage);
+		EntryInfoClassM2P classInfo = (EntryInfoClassM2P) argu.c_get_m2p(n.f1.f0.tokenImage);
 		n.f4.accept(this, classInfo);
 		return ret;
 	}
@@ -161,7 +161,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	public PigletCodeAbstract visit(ClassExtendsDeclaration n, EntryInfo argu)
 	{
 		PigletCodeAbstract ret = null;
-		EntryInfoClassM2P classInfo = (EntryInfoClassM2P) argu.c_get(n.f1.f0.tokenImage);
+		EntryInfoClassM2P classInfo = (EntryInfoClassM2P) argu.c_get_m2p(n.f1.f0.tokenImage);
 		n.f6.accept(this, classInfo);
 		return ret;
 	}
@@ -184,16 +184,16 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	public PigletCodeAbstract visit(MethodDeclaration n, EntryInfo argu)
 	{
 		PigletCodeSet methodCodeSet = new PigletCodeSet();
-		EntryInfoMethodM2P methodInfo = (EntryInfoMethodM2P) argu.m_get(n.f2.f0.tokenImage);
+		EntryInfoMethodM2P methodInfo = (EntryInfoMethodM2P) argu.m_get_m2p(n.f2.f0.tokenImage);
 		
-		this.init_temp_idx(methodInfo.get_num_variable());
+		this.init_temp_idx(methodInfo.get_num_local_variable() + 1);
 		
 		//think there are less than 20 parameters
-		methodCodeSet.emit(methodInfo.get_belong_class_name() + "_" + n.f2.f0.tokenImage + " [ " + (methodInfo.get_num_variable() + 1) + " ] ");
+		methodCodeSet.emit(methodInfo.get_belong_class_name() + "_" + n.f2.f0.tokenImage + "\t[ " + (methodInfo.get_num_paras() + 1) + " ] ");
 		
 		methodCodeSet.emit("BEGIN");
 		
-		for(int i = methodInfo.get_num_paras(); i < methodInfo.get_num_variable(); i++)
+		for(int i = 1 + methodInfo.get_num_paras(); i <= methodInfo.get_num_local_variable(); i++)
 		{
 			methodCodeSet.emit("MOVE TEMP " + i + " 0");
 		}
@@ -206,6 +206,8 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		methodCodeSet.emit("RETURN " + rtnExpressionCodeSet.get_temp_address());
 		methodCodeSet.emit("END");
+		
+		methodCodeSet.print_all(this.out);
 		return null;
 		
 	}
@@ -353,7 +355,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		PigletCodeSet statCodeSet = (PigletCodeSet) n.f4.accept(this, argu);
 		
 		ret.merge_code_set(expCodeSet);
-		ret.emit("CJUMP " + expCodeSet.get_temp_address() + falseLabel);
+		ret.emit("CJUMP " + expCodeSet.get_temp_address() + " "  + falseLabel);
 		
 		ret.merge_code_set(statCodeSet);
 		ret.emit("JUMP " + startLabel);
@@ -410,10 +412,10 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		PigletCode tempAdd = new PigletCode(this.get_new_temp());
 		
 		ret.merge_code_set(expCodeSet1);
-		ret.emit("CJUMP " + expCodeSet1.get_temp_address() + falseLabel);
+		ret.emit("CJUMP " + expCodeSet1.get_temp_address() + " " + falseLabel);
 		
 		ret.merge_code_set(expCodeSet2);
-		ret.emit("CJUMP " + expCodeSet1.get_temp_address() + falseLabel);
+		ret.emit("CJUMP " + expCodeSet2.get_temp_address() + " " + falseLabel);
 		
 		ret.emit("MOVE " + tempAdd + " 1");
 		ret.emit("JUMP " + doneLabel);
@@ -445,7 +447,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		ret.merge_code_set(exp1CodeSet);
 		ret.merge_code_set(exp2CodeSet);
-		ret.emit("MOVE " + tempAdd + "LT " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
+		ret.emit("MOVE " + tempAdd + " LT " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
@@ -469,7 +471,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		ret.merge_code_set(exp1CodeSet);
 		ret.merge_code_set(exp2CodeSet);
-		ret.emit("MOVE " + tempAdd + "PLUS " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
+		ret.emit("MOVE " + tempAdd + " PLUS " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
@@ -492,7 +494,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		ret.merge_code_set(exp1CodeSet);
 		ret.merge_code_set(exp2CodeSet);
-		ret.emit("MOVE " + tempAdd + "MINUS " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
+		ret.emit("MOVE " + tempAdd + " MINUS " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
@@ -515,7 +517,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		ret.merge_code_set(exp1CodeSet);
 		ret.merge_code_set(exp2CodeSet);
-		ret.emit("MOVE " + tempAdd + "TIMES " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
+		ret.emit("MOVE " + tempAdd + " TIMES " + exp1CodeSet.get_temp_address() + " " + exp2CodeSet.get_temp_address());
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
@@ -592,26 +594,24 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	{
 		PigletCodeSet ret = new PigletCodeSet();
 		PigletCodeSet instCodeSet = (PigletCodeSet) n.f0.accept(this, argu);
-		PigletCodeSet IDCodeSet = (PigletCodeSet) n.f2.accept(this, argu);
-		messageSendParasVecCodeSet.removeAllElements();
 		//the visitor of ExpressionList will help to fill the vector.
 		PigletCodeSet paraCodeSet = (PigletCodeSet) n.f4.accept(this, argu);
 		ret.merge_code_set(instCodeSet);
-		ret.merge_code_set(IDCodeSet);
 		ret.merge_code_set(paraCodeSet);
-		
+	
+
 		String instBelongClassName = instCodeSet.get_value_type();
 		//totally rely on the implementation of the visitor for Identifier. 
 		
 		EntryInfoClassM2P classInfo = SymbolTableM2P.symbolTableM2P.get(instBelongClassName);
-		
 		int methodOffset = classInfo.get_method_zone().get_method_offset(n.f2.f0.tokenImage);
 		
 		PigletCode tempAdd = new PigletCode(this.get_new_temp());
-		ret.emit("HLOAD " + tempAdd + " " + IDCodeSet.get_temp_address() + " 0");
+		ret.emit("HLOAD " + tempAdd + " " + instCodeSet.get_temp_address() + " 0");//er ci jian zhi (Chinese PinYin)
 		//now the tempAdd holds the address of the method table
 		
-		ret.emit("HLOAD " + tempAdd + " " + tempAdd + " " + (methodOffset * 4));
+		PigletCode tempAdd1 = new PigletCode(this.get_new_temp());
+		ret.emit("HLOAD " + tempAdd1 + " " + tempAdd + " " + (methodOffset * 4));
 		//now we get the entry of the method.
 		
 		String strPara = "( ";
@@ -620,13 +620,16 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 			strPara += this.messageSendParasVecCodeSet.elementAt(i).get_temp_address() + " ";
 		}
 		strPara += ")";
-		ret.emit("MOVE " + tempAdd + " " + "CALL " + IDCodeSet.get_temp_address() + " " + strPara);
+		PigletCode tempAdd2 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempAdd2 + " " + "CALL " + tempAdd1 + " " + strPara);
 		
-		ret.set_temp_address(tempAdd);
+		ret.set_temp_address(tempAdd2);
 		ret.set_memory_address(null);
 		
-		String rtnType = classInfo.m_get(n.f2.f0.tokenImage).get_rtn_type();
+		String rtnType = classInfo.m_get_m2p(n.f2.f0.tokenImage).get_rtn_type();
 		ret.set_value_type(rtnType);
+		
+		messageSendParasVecCodeSet.removeAllElements();
 		
 		return ret;
 	}
@@ -733,7 +736,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 	{
 		PigletCodeSet ret = new PigletCodeSet();
 		PigletCode tempCode = new PigletCode(this.get_new_temp());
-		ret.emit("MOVE " + tempCode + "TEMP 0");
+		ret.emit("MOVE " + tempCode + " TEMP 0");
 		
 		ret.set_temp_address(tempCode);
 		ret.set_memory_address(null);
@@ -756,7 +759,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		
 		//allocate memory for the array
 		PigletCode baseTemp = new PigletCode(this.get_new_temp());
-		ret.emit("MOVE " + baseTemp + "HALLOCATE TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4");
+		ret.emit("MOVE " + baseTemp + " HALLOCATE TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4");
 		//now base holds the base address of the array
 		ret.emit("HSTORE " + baseTemp + " 0 " + sizeCodeSet.get_temp_address());
 		//store the length
@@ -769,10 +772,10 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("MOVE " + idxTemp + " 4");
 		ret.append_label(startLabel);
 		ret.emit("CJUMP " + "LT " + idxTemp + " TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4 " + doneLabel);
-		ret.emit("HSTORE " + baseTemp + idxTemp + " 0");
-		ret.emit("MOVE " + idxTemp + "PLUS " + idxTemp + " 4");
+		ret.emit("HSTORE " + baseTemp + " " + idxTemp + " 0");
+		ret.emit("MOVE " + idxTemp + " PLUS " + idxTemp + " 4");
 		ret.emit("JUMP " + startLabel);
-		ret.append_label(startLabel);
+		ret.append_label(doneLabel);
 		
 		ret.set_temp_address(baseTemp);
 		ret.set_memory_address(null);
@@ -803,12 +806,12 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("HSTORE " + classBaseTemp + " 0 " + mthdsBaseTemp);
 		for(int i = 4; i < sizeVarsPlus; i += 4)
 		{
-			ret.emit("HSTORE " + classBaseTemp + i + " 0");
+			ret.emit("HSTORE " + classBaseTemp + " " + i + " 0");
 		}
 		
 		for(int i = 0; i < sizeMthds; i += 4)
 		{
-			ret.emit("HSTORE " + mthdsBaseTemp + " " + i +classInfo.get_method_zone() + " " + 
+			ret.emit("HSTORE " + mthdsBaseTemp + " " + i + " " +
 				classInfo.get_method_zone().get_method_label(classInfo.get_method_zone().get_method_vector().elementAt(i / 4)));
 		}
 		

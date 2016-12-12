@@ -14,16 +14,16 @@ public class VariableZone {
 	
 	public void add_variable(String name)
 	{
+		this.variableOffset.put(name,this.variableVector.size());//bug fix: test03, the offset should be size - 1.
 		this.variableVector.add(name);
-		this.variableOffset.put(name,this.variableVector.size());
 	}
 	
-	public int get_num_variable()
+	public int get_num_local_variable()
 	{
 		return this.variableVector.size();
 	}
 	
-	public Vector<String> get_variable_vecor()
+	public Vector<String> get_variable_vector()
 	{
 		return this.variableVector;
 	}

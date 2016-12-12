@@ -65,7 +65,7 @@ public class PigletCodeSet extends PigletCodeAbstract{
 	
 	public void append_label(String label)
 	{
-		this.add_code(new PigletCode(label + " NOOP"));
+		this.add_code(new PigletCode(label + "\tNOOP"));
 	}
 	
 	public void merge_code_set(PigletCodeSet set)
@@ -75,7 +75,7 @@ public class PigletCodeSet extends PigletCodeAbstract{
 			return;
 		}
 		int base = this.get_num_code();
-		for(int i = 0; i < set.nextList.size(); i++)
+		for(int i = 0; i < set.codeSet.size(); i++)
 		{
 			this.add_code(set.codeSet.elementAt(i));
 		}
@@ -149,15 +149,25 @@ public class PigletCodeSet extends PigletCodeAbstract{
 	
 	public void print_all(OutputStream out)
 	{
-		boolean needTab;
+		boolean needTab = false;
 		String huge = new String();
 		for(int i = 0; i < this.codeSet.size(); i++)
 		{
+			if(this.codeSet.elementAt(i).toString().equals("END"))
+				needTab = false;
+			if(needTab)
+				huge += "\t";
+		
 			huge += this.codeSet.elementAt(i) + "\n";
+			
+			if(this.codeSet.elementAt(i).toString().equals("BEGIN")
+				||this.codeSet.elementAt(i).toString().equals("MAIN"))
+				needTab = true;
 		}
 		try
 		{
 			out.write(huge.getBytes());
+			System.out.println(huge);
 		}
 		catch(Exception e){}
 	}

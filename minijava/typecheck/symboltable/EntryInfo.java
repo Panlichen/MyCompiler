@@ -1,6 +1,7 @@
 package minijava.typecheck.symboltable;
 
 import java.util.Hashtable;
+
 import java.util.Vector;
 
 import minijava.syntaxtree.AllocationExpression;
@@ -49,6 +50,7 @@ import minijava.syntaxtree.Type;
 import minijava.syntaxtree.TypeDeclaration;
 import minijava.syntaxtree.VarDeclaration;
 import minijava.syntaxtree.WhileStatement;
+import minijava.minijava2piglet.symboltablem2p.*;
 
 public class EntryInfo {
 	
@@ -120,6 +122,14 @@ public class EntryInfo {
 	/*methods in EntryInfoVariable.java*/
 	public void set_type(Type theType){};
 	public String get_type(){return null;}
+	
+	/*methods in minijava.minijava2piglet*/
+	public void v_put_m2p(String name, EntryInfoVariable value){}
+	public void m_put_m2p(String name, EntryInfoMethodM2P value){}
+	public EntryInfoMethodM2P m_get_m2p(String key){return null;}
+	public void c_put_m2p(String name, EntryInfoClassM2P value){}
+	public EntryInfoClass c_get_m2p(String key){return null;}
+	
 	
 	
 }

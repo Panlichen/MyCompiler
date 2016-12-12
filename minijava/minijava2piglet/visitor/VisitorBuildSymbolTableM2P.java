@@ -39,10 +39,10 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	mainMethodInfo.set_id_info(new Identifier(n.f6));
     	mainMethodInfo.set_rtn_type("void");
     	
-    	mainClassInfo.m_put(mainMethodInfo.get_name(), mainMethodInfo);
+    	mainClassInfo.m_put_m2p(mainMethodInfo.get_name(), mainMethodInfo);
     	mainClassInfo.m_zone_put(mainMethodInfo.get_name(), mainClassName + "_" + mainMethodInfo.get_name());
     	
-    	argu.c_put(mainClassInfo.get_name(), mainClassInfo);
+    	argu.c_put_m2p(mainClassInfo.get_name(), mainClassInfo);
     	
     	n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -78,7 +78,7 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	EntryInfoClassM2P classInfo = new EntryInfoClassM2P();
     	classInfo.set_id_info(n.f1);
     	
-    	argu.c_put(classInfo.get_name(), classInfo);
+    	argu.c_put_m2p(classInfo.get_name(), classInfo);
     	
     	n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -104,7 +104,7 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	classInfo.set_id_info(n.f1);
     	classInfo.set_parent_class(n.f3.f0.tokenImage);//bug fix : silly me...test56
     	
-    	argu.c_put(classInfo.get_name(), classInfo);
+    	argu.c_put_m2p(classInfo.get_name(), classInfo);
     	
     	n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -138,7 +138,7 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	methodInfo.set_rtn_type(n.f1);
     	methodInfo.set_belong_class_name(argu.get_name());
     	
-    	argu.m_put(methodInfo.get_name(), methodInfo);
+    	argu.m_put_m2p(methodInfo.get_name(), methodInfo);
     	((EntryInfoClassM2P) argu).m_zone_put(methodInfo.get_name(), methodInfo.get_belong_class_name() + "_" + methodInfo.get_name());
     	
     	n.f0.accept(this, argu);
@@ -167,7 +167,7 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	variableInfo.set_id_info(n.f1);
     	variableInfo.set_type(n.f0);
     	
-    	argu.v_put(variableInfo.get_name(), variableInfo);
+    	argu.v_put_m2p(variableInfo.get_name(), variableInfo);
     	
     	if(argu instanceof EntryInfoMethodM2P)
     	{
@@ -189,7 +189,8 @@ public class VisitorBuildSymbolTableM2P extends VisitorBuildSymbolTable{
     	variableInfo.set_id_info(n.f1);
     	variableInfo.set_type(n.f0);
     	
-    	argu.v_put(variableInfo.get_name(), variableInfo);
+    	argu.add_para(variableInfo.get_type());
+    	argu.v_put_m2p(variableInfo.get_name(), variableInfo);
     	
     	if(argu instanceof EntryInfoMethodM2P)
     	{

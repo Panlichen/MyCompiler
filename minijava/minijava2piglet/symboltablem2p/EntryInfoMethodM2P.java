@@ -1,5 +1,6 @@
 package minijava.minijava2piglet.symboltablem2p;
 
+import java.util.Hashtable;
 import java.util.Vector;
 import minijava.typecheck.symboltable.*;
 import minijava.minijava2piglet.codesketch.*;
@@ -14,9 +15,10 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 		super();
 		this.localDefinedVariables = new Vector<String>();
 		this.parameters = new Vector<String>();
+		this.variableZone = new VariableZone();
 	}
 	
-	public void v_put(String name, EntryInfoVariable value)
+	public void v_put_m2p(String name, EntryInfoVariable value)
 	{
 		super.v_put(name, value);
 		this.variableZone.add_variable(name);
@@ -31,6 +33,7 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 	{
 		this.localDefinedVariables.add(name);
 	}
+	
 	public Vector<String> get_all_local_defined_variables()
 	{
 		return this.localDefinedVariables;
@@ -41,9 +44,9 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 		return this.localDefinedVariables.size();
 	}
 	//public int get_num_paras(){}  already implemented
-	public int get_num_variable()
+	public int get_num_local_variable()
 	{
-		return this.get_variable_zone().get_num_variable();
+		return this.get_variable_zone().get_num_local_variable();
 	}
 	
 	
@@ -68,7 +71,8 @@ public class EntryInfoMethodM2P extends EntryInfoMethod{
 		{
 			PigletCode tempAddress = new PigletCode(r.get_new_temp());
 			EntryInfoClassM2P classInfo = SymbolTableM2P.symbolTableM2P.get(this.get_belong_class_name());
-			PigletCode memoryAddress = new PigletCode("TEMP 0 " + 4 * (classInfo.get_variable_zone().get_variable_offset(varName) + 1));
+			int varOffset = classInfo.get_variable_zone().get_variable_offset(varName);
+			PigletCode memoryAddress = new PigletCode("TEMP 0 " + 4 * (varOffset+ 1));
 			ret.emit("HLOAD " + tempAddress + " " + memoryAddress);
 			ret.set_memory_address(memoryAddress);
 			ret.set_temp_address(tempAddress);
