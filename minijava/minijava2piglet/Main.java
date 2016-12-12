@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
     	try {
     		//Node root = new MiniJavaParser(System.in).Goal();
-    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCases\\TreeVisitor.java")).Goal();
+    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesWOTE\\test100.java")).Goal();
     		
     		SymbolTableM2P topTable = new SymbolTableM2P();
     		VisitorBuildSymbolTableM2P vbstm = new VisitorBuildSymbolTableM2P();
