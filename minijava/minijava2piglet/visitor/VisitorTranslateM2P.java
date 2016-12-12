@@ -2,6 +2,8 @@ package minijava.minijava2piglet.visitor;
 
 import java.util.*;
 import java.io.*;
+import java.lang.Integer;
+
 import minijava.minijava2piglet.symboltablem2p.*;
 import minijava.minijava2piglet.codesketch.*;
 import minijava.syntaxtree.*;
@@ -298,7 +300,9 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("ERROR");
 		
 		ret.append_label(legalLabel);
-		ret.emit("HSTORE " + IDCodeSet.get_temp_address() + " TIMES PLUS " + idxCodeSet.get_temp_address() + " 1 4 " + expCodeSet.get_temp_address());
+		int idx = 4 * (Integer.parseInt(idxCodeSet.get_temp_address().toString()) + 1); 
+		ret.emit("HSTORE " + IDCodeSet.get_temp_address() + " " + idx + " " + expCodeSet.get_temp_address());
+		//ret.emit("HSTORE " + IDCodeSet.get_temp_address() + " TIMES PLUS " + idxCodeSet.get_temp_address() + " 1 4 " + expCodeSet.get_temp_address());
 		
 		
 		return ret;
@@ -554,8 +558,10 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("ERROR");
 		
 		ret.append_label(legalLabel);
-		ret.emit("HLOAD " + tempAdd + " " + nameCodeSet.get_temp_address() + " TIMES PLUS " 
-				+ idxCodeSet.get_temp_address() + " 1 4");
+		int idx = 4 * (Integer.parseInt(idxCodeSet.get_temp_address().toString()) + 1); 
+		ret.emit("HLOAD " + tempAdd + " " + nameCodeSet.get_temp_address() + " " + idx);
+		//ret.emit("HLOAD " + tempAdd + " " + nameCodeSet.get_temp_address() + " TIMES PLUS " 
+				//+ idxCodeSet.get_temp_address() + " 1 4");
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
