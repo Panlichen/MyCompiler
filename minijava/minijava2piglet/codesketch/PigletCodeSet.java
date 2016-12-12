@@ -166,6 +166,17 @@ public class PigletCodeSet extends PigletCodeAbstract{
 		}
 		try
 		{
+			/*
+			File file = new File("D:\\PKU\\compile_practice\\testCasesPiglet\\trivial1.pg");
+			FileOutputStream fos = new FileOutputStream(file, true);
+			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
+            BufferedWriter bWriter = new BufferedWriter(osWriter);
+			bWriter.write(huge);
+			bWriter.flush();
+			
+			
+			bWriter.close();
+			*/
 			out.write(huge.getBytes());
 			System.out.println(huge);
 		}
