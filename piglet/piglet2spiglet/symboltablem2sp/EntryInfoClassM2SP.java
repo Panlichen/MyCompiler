@@ -2,7 +2,7 @@ package piglet.piglet2spiglet.symboltablem2sp;
 
 import minijava.typecheck.symboltable.*;
 import java.util.*;
-import minijava.minijava2piglet.codesketch.*;
+import piglet.piglet2spiglet.codesketch.*;
 
 public class EntryInfoClassM2SP extends EntryInfoClass{
 	Hashtable<String, EntryInfoMethodM2SP>mthdTableM2SP;

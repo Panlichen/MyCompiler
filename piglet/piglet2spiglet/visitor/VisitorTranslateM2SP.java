@@ -3,7 +3,7 @@ package piglet.piglet2spiglet.visitor;
 import java.util.*;
 import java.io.*;
 
-import minijava.minijava2piglet.codesketch.*;
+import piglet.piglet2spiglet.codesketch.*;
 import minijava.syntaxtree.*;
 import minijava.typecheck.symboltable.*;
 import minijava.visitor.*;
@@ -295,11 +295,24 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		
 		String legalLabel = this.get_new_label();
 		
-		ret.emit("CJUMP " + "LT " + tempAdd + " PLUS 1 " + idxCodeSet.get_temp_address() + " " + legalLabel);
+		PigletCode tempForSP = new PigletCode(this.get_new_temp());
+		PigletCode tempForSP2 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP2 + " PLUS " + idxCodeSet.get_temp_address() + " 1");
+		ret.emit("MOVE " + tempForSP + " LT " + tempAdd + " " + tempForSP2);
+		ret.emit("CJUMP " + tempForSP + " " + legalLabel);
 		ret.emit("ERROR");
 		
 		ret.append_label(legalLabel);
-		ret.emit("HSTORE PLUS " + IDCodeSet.get_temp_address() + " TIMES PLUS " + idxCodeSet.get_temp_address() + " 1 4 0 " + expCodeSet.get_temp_address());
+		
+		PigletCode tempForSP1 = new PigletCode(this.get_new_temp());
+		PigletCode tempForSP3 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP3 + " PLUS " + idxCodeSet.get_temp_address() + " 1");
+
+		PigletCode tempForSP4 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP4 + " TIMES " + tempForSP3 + " 4");
+		ret.emit("MOVE " + tempForSP1 + " PLUS " + IDCodeSet.get_temp_address() + " " + tempForSP4);
+		
+		ret.emit("HSTORE " + tempForSP1 + " 0 " + expCodeSet.get_temp_address());
 		
 		
 		return ret;
@@ -551,12 +564,29 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		
 		String legalLabel = this.get_new_label();
 		
-		ret.emit("CJUMP " + "LT " + tempAdd + " PLUS 1 " + idxCodeSet.get_temp_address() + " " + legalLabel);
+		PigletCode tempForSP = new PigletCode(this.get_new_temp());
+		
+		
+		PigletCode tempForSP5 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP5 + " PLUS " + idxCodeSet.get_temp_address() + " 1");
+		ret.emit("MOVE " + tempForSP + " LT " + tempAdd + " " + tempForSP5);
+		//ret.emit("MOVE " + tempForSP + " LT " + tempAdd + " PLUS 1 " + idxCodeSet.get_temp_address());
+		
+		ret.emit("CJUMP " + tempForSP + " " + legalLabel);
 		ret.emit("ERROR");
 		
 		ret.append_label(legalLabel);
-		ret.emit("HLOAD " + tempAdd + " PLUS " + nameCodeSet.get_temp_address() + " TIMES PLUS " 
-				+ idxCodeSet.get_temp_address() + " 1 4 0");
+		
+		PigletCode tempForSP1 = new PigletCode(this.get_new_temp());
+
+		PigletCode tempForSP3 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP3 + " PLUS " + idxCodeSet.get_temp_address() + " 1 ");
+
+		PigletCode tempForSP4 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP4 + " TIMES " + tempForSP3 + " 4");
+		ret.emit("MOVE " + tempForSP1 + " PLUS " + nameCodeSet.get_temp_address() + " " + tempForSP4);	
+		
+		ret.emit("HLOAD " + tempAdd + " " + tempForSP1 + " 0");
 		
 		ret.set_temp_address(tempAdd);
 		ret.set_memory_address(null);
@@ -686,7 +716,10 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 	{
 		PigletCodeSet ret = new PigletCodeSet();
 		
-		ret.set_temp_address(new PigletCode( n.f0.tokenImage ));
+		PigletCode tempCode = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempCode + " " + n.f0.tokenImage);
+		
+		ret.set_temp_address(tempCode);
 		ret.set_memory_address(null);
 		ret.set_value_type(this.get_int_type());
 		return ret;
@@ -699,7 +732,10 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 	{
 		PigletCodeSet ret = new PigletCodeSet();
 		
-		ret.set_temp_address(new PigletCode(" 1"));
+		PigletCode tempCode = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempCode + " 1");
+		
+		ret.set_temp_address(tempCode);
 		ret.set_memory_address(null);
 		ret.set_value_type(this.get_boolean_type());
 		return ret;
@@ -711,8 +747,10 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 	public PigletCodeAbstract visit(FalseLiteral n, EntryInfo argu)
 	{
 		PigletCodeSet ret = new PigletCodeSet();
+		PigletCode tempCode = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempCode + " 0");
 		
-		ret.set_temp_address(new PigletCode(" 0"));
+		ret.set_temp_address(tempCode);
 		ret.set_memory_address(null);
 		ret.set_value_type(this.get_boolean_type());
 		return ret;
@@ -757,7 +795,24 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		
 		//allocate memory for the array
 		PigletCode baseTemp = new PigletCode(this.get_new_temp());
-		ret.emit("MOVE " + baseTemp + " HALLOCATE TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4");
+		
+		PigletCode tempForSP3 = new PigletCode(this.get_new_temp());
+		
+		
+		
+		PigletCode tempForSP5 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP5 + " PLUS " + sizeCodeSet.get_temp_address() + " 1 ");
+
+		PigletCode tempForSP4 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP4 + " TIMES " + tempForSP5 + " 4");
+		ret.emit("MOVE " + tempForSP3 + " " +  tempForSP4);
+		
+		
+		
+		
+		//ret.emit("MOVE " + tempForSP3 + " TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4" );
+		
+		ret.emit("MOVE " + baseTemp + " HALLOCATE " + tempForSP3);
 		//now base holds the base address of the array
 		ret.emit("HSTORE " + baseTemp + " 0 " + sizeCodeSet.get_temp_address());
 		//store the length
@@ -769,8 +824,29 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		
 		ret.emit("MOVE " + idxTemp + " 4");
 		ret.append_label(startLabel);
-		ret.emit("CJUMP " + "LT " + idxTemp + " TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4 " + doneLabel);
-		ret.emit("HSTORE PLUS " + baseTemp + " " + idxTemp + " 0 0");
+		
+		PigletCode tempForSP = new PigletCode(this.get_new_temp());
+		
+		
+		PigletCode tempForSP6 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP6 + " PLUS " + sizeCodeSet.get_temp_address() + " 1 ");
+
+		PigletCode tempForSP7 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP7 + " TIMES " + tempForSP6 + " 4");
+		
+		ret.emit("MOVE " + tempForSP + " LT " + idxTemp + " " + tempForSP7);
+		
+		//ret.emit("MOVE " + tempForSP + " LT " + idxTemp + " TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4 ");
+		
+		ret.emit("CJUMP " + tempForSP + " " + doneLabel);
+		
+		PigletCode tempForSP1 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP1 + " PLUS " + baseTemp + " " + idxTemp );
+		
+		PigletCode tempForSP2 = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP2 + " 0");
+		
+		ret.emit("HSTORE " + tempForSP1 + " 0 " + tempForSP2);
 		ret.emit("MOVE " + idxTemp + " PLUS " + idxTemp + " 4");
 		ret.emit("JUMP " + startLabel);
 		ret.append_label(doneLabel);
@@ -804,13 +880,16 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		ret.emit("HSTORE " + classBaseTemp + " 0 " + mthdsBaseTemp);
 		for(int i = 4; i < sizeVarsPlus; i += 4)
 		{
-			ret.emit("HSTORE " + classBaseTemp + " " + i + " 0");
+			PigletCode tempForSP = new PigletCode(this.get_new_temp());
+			ret.emit("MOVE " + tempForSP + " 0");
+			ret.emit("HSTORE " + classBaseTemp + " " + i + " " + tempForSP);
 		}
 		
 		for(int i = 0; i < sizeMthds; i += 4)
 		{
-			ret.emit("HSTORE " + mthdsBaseTemp + " " + i + " " +
-				classInfo.get_method_zone().get_method_label(classInfo.get_method_zone().get_method_vector().elementAt(i / 4)));
+			PigletCode tempForSP = new PigletCode(this.get_new_temp());
+			ret.emit("MOVE " + tempForSP + " " + classInfo.get_method_zone().get_method_label(classInfo.get_method_zone().get_method_vector().elementAt(i / 4)));
+			ret.emit("HSTORE " + mthdsBaseTemp + " " + i + " " + tempForSP);
 		}
 		
 		ret.set_temp_address(classBaseTemp);
@@ -827,7 +906,9 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 	{
 		PigletCodeSet ret = (PigletCodeSet) n.f1.accept(this, argu);
 		PigletCode tempCode = new PigletCode(this.get_new_temp());
-		ret.emit("MOVE " + tempCode + " MINUS 1 " + ret.get_temp_address());
+		PigletCode tempForSP = new PigletCode(this.get_new_temp());
+		ret.emit("MOVE " + tempForSP + " 1");
+		ret.emit("MOVE " + tempCode + " MINUS " + tempForSP + " " + ret.get_temp_address());
 		
 		ret.set_temp_address(tempCode);
 		ret.set_memory_address(null);

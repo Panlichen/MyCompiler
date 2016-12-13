@@ -3,7 +3,7 @@ package piglet.piglet2spiglet.symboltablem2sp;
 import java.util.Hashtable;
 import java.util.Vector;
 import minijava.typecheck.symboltable.*;
-import minijava.minijava2piglet.codesketch.*;
+import piglet.piglet2spiglet.codesketch.*;
 
 public class EntryInfoMethodM2SP extends EntryInfoMethod{
 	Vector<String> localDefinedVariables;
@@ -72,7 +72,7 @@ public class EntryInfoMethodM2SP extends EntryInfoMethod{
 			PigletCode tempAddress = new PigletCode(r.get_new_temp());
 			EntryInfoClassM2SP classInfo = SymbolTableM2SP.symbolTableM2SP.get(this.get_belong_class_name());
 			int varOffset = classInfo.get_variable_zone().get_variable_offset(varName);
-			PigletCode memoryAddress = new PigletCode("TEMP 0 " + 4 * (varOffset+ 1));
+			PigletCode memoryAddress = new PigletCode("TEMP 0 " + 4 * (varOffset + 1));
 			ret.emit("HLOAD " + tempAddress + " " + memoryAddress);
 			ret.set_memory_address(memoryAddress);
 			ret.set_temp_address(tempAddress);

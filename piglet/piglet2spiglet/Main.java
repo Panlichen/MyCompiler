@@ -28,8 +28,8 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		//Node root = new MiniJavaParser(System.in).Goal();
-    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesWOTE\\BinaryTree.java")).Goal();
+    		Node root = new MiniJavaParser(System.in).Goal();
+    		//Node root = new MiniJavaParser(new FileInputStream("/Users/myles/PKU/CompilierPractice/testCasesWOTE/TreeVisitor.java")).Goal();
     		
     		SymbolTableM2SP topTable = new SymbolTableM2SP();
     		VisitorBuildSymbolTableM2SP vbstm = new VisitorBuildSymbolTableM2SP();
