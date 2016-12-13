@@ -771,7 +771,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("MOVE " + idxTemp + " 4");
 		ret.append_label(startLabel);
 		ret.emit("CJUMP " + "LT " + idxTemp + " TIMES PLUS " + sizeCodeSet.get_temp_address() + " 1 4 " + doneLabel);
-		ret.emit("HSTORE " + baseTemp + " " + idxTemp + " 0");
+		ret.emit("HSTORE PLUS " + baseTemp + " " + idxTemp + " 0 0");
 		ret.emit("MOVE " + idxTemp + " PLUS " + idxTemp + " 4");
 		ret.emit("JUMP " + startLabel);
 		ret.append_label(doneLabel);
