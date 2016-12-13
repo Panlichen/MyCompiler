@@ -50,6 +50,7 @@ import minijava.syntaxtree.Type;
 import minijava.syntaxtree.TypeDeclaration;
 import minijava.syntaxtree.VarDeclaration;
 import minijava.syntaxtree.WhileStatement;
+import piglet.piglet2spiglet.symboltablem2sp.*;
 import minijava.minijava2piglet.symboltablem2p.*;
 
 public class EntryInfo {
@@ -129,6 +130,13 @@ public class EntryInfo {
 	public EntryInfoMethodM2P m_get_m2p(String key){return null;}
 	public void c_put_m2p(String name, EntryInfoClassM2P value){}
 	public EntryInfoClass c_get_m2p(String key){return null;}
+	
+	/*methods in minijava.minijava2piglet*/
+	public void v_put_m2sp(String name, EntryInfoVariable value){}
+	public void m_put_m2sp(String name, EntryInfoMethodM2SP value){}
+	public EntryInfoMethodM2SP m_get_m2sp(String key){return null;}
+	public void c_put_m2sp(String name, EntryInfoClassM2SP value){}
+	public EntryInfoClassM2SP c_get_m2sp(String key){return null;}
 	
 	
 	

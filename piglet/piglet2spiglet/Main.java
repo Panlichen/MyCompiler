@@ -1,26 +1,46 @@
 package piglet.piglet2spiglet;
 
 
-import piglet.ParseException;
-import piglet.PigletParser;
-import piglet.TokenMgrError;
-import piglet.syntaxtree.Node;
-import piglet.visitor.GJDepthFirst;
+import java.io.ByteArrayOutputStream;
+
+//import piglet.ParseException;
+//import piglet.PigletParser;
+//import piglet.TokenMgrError;
+import piglet.piglet2spiglet.symboltablem2sp.*;
+import piglet.piglet2spiglet.visitor.*;
+//import piglet.syntaxtree.Node;
+//import piglet.visitor.GJDepthFirst;
+import java.io.FileInputStream;
+import java.util.Scanner;
+
+import minijava.MiniJavaParser;
+import minijava.ParseException;
+import minijava.TokenMgrError;
+import minijava.syntaxtree.Node;
+import minijava.visitor.GJDepthFirst;
+
+import minijava.syntaxtree.*;
+import minijava.typecheck.symboltable.*;
+import minijava.typecheck.visitor.*;
 
 
 public class Main { 
  
     public static void main(String[] args) {
     	try {
-    		Node root = new PigletParser(System.in).Goal();
-    		/*
-    		 * TODO: Implement your own Visitors and other classes.
-    		 * 
-    		 */
-    		GJDepthFirst v = new GJDepthFirst<Object,Object>() {
-    		};
-    		//Traverse the Abstract Grammar Tree
-    		root.accept(v,null);
+    		//Node root = new MiniJavaParser(System.in).Goal();
+    		Node root = new MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesWOTE\\BinaryTree.java")).Goal();
+    		
+    		SymbolTableM2SP topTable = new SymbolTableM2SP();
+    		VisitorBuildSymbolTableM2SP vbstm = new VisitorBuildSymbolTableM2SP();
+    		ByteArrayOutputStream baops = new ByteArrayOutputStream();
+    		VisitorTranslateM2SP vtm = new VisitorTranslateM2SP(baops);
+    		
+    		root.accept(vbstm, topTable);
+    		topTable.inherit_from_ancestors();
+    		
+    		root.accept(vtm, topTable);
+    		
     	}
     	catch(TokenMgrError e){
     		//Handle Lexical Errors
