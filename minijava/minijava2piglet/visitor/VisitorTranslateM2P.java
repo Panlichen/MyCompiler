@@ -619,7 +619,7 @@ public class VisitorTranslateM2P extends GJDepthFirst<PigletCodeAbstract, EntryI
 		ret.emit("HLOAD " + tempAdd1 + " " + tempAdd + " " + (methodOffset * 4));
 		//now we get the entry of the method.
 		
-		String strPara = "( ";
+		String strPara = "( " + instCodeSet.get_temp_address() + " ";
 		for(int i = 0; i < this.messageSendParasVecCodeSet.size(); i++)
 		{
 			strPara += this.messageSendParasVecCodeSet.elementAt(i).get_temp_address() + " ";
