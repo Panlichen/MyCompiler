@@ -134,7 +134,7 @@ public class BasicBlock {
 			for(int j = 0; j < statement.size(); j++)
 			{
 				MyBitSet tempMBS = this.vecLivenessPerStmt.elementAt(i);
-				this.vecLivenessPerStmt.setElementAt(tempMBS.my_or(this.useSet), i);
+				this.vecLivenessPerStmt.setElementAt(tempMBS.my_or(this.useSet), i);//join(v)
 				this.update_DU_info(statement.elementAt(j), i);
 			}
 		}
@@ -145,11 +145,11 @@ public class BasicBlock {
 		if(v.is_use())
 		{
 			this.useSet.set(v.get_temp_num());
-			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num());//ppt-kanga P.12
+			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num());//ppt-kanga P.12, U var(E)
 		}
 		else
 		{
-			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num(), false);//ppt-kanga P.12
+			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num(), false);//ppt-kanga P.12, \id
 			this.vecDefInfoPerStmt.elementAt(idx).set(v.get_temp_num());//record def info
 			this.useSet.set(v.get_temp_num(), false);
 			this.defSet.set(v.get_temp_num());

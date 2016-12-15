@@ -145,6 +145,11 @@ public class FlowGraph {
 			for(int j = 0; j < tempBB.vecLivenessPerStmt.size(); i++)
 			{
 				MyBitSet tempMBS = tempBB.vecLivenessPerStmt.elementAt(j);
+				int defIdx = tempBB.vecDefInfoPerStmt.elementAt(j).nextSetBit(0);
+				if(defIdx >= 0)
+				{
+					tempOut.set(defIdx, false);
+				}
 				tempBB.vecLivenessPerStmt.setElementAt(tempMBS.my_or(tempOut), j);
 			}
 		}
