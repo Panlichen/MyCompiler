@@ -4,6 +4,8 @@ import java.util.*;
 
 public class BasicBlock {
 	private Vector<Vector<TempInfo>> vecStatement;
+	public Vector<MyBitSet> vecLivenessPerStmt;
+	public Vector<MyBitSet> vecDefInfoPerStmt;
 	private int curIdx;
 	private int curIdx1;
 	
@@ -22,6 +24,8 @@ public class BasicBlock {
 
 	public BasicBlock()
 	{
+		this.vecLivenessPerStmt = new Vector<MyBitSet>();
+		this.vecDefInfoPerStmt = new Vector<MyBitSet>();
 		this.vecStatement = new Vector<Vector<TempInfo>>();
 		this.vecSuccessor = new Vector<BasicBlock>();
 		this.vecPredecessor = new Vector<BasicBlock>();
@@ -115,26 +119,38 @@ public class BasicBlock {
 	
 	public void make_defSet_useSet()
 	{
+		for(int i = 0; i < this.vecStatement.size(); i++)
+		{
+			MyBitSet tempMBS = new MyBitSet();
+			MyBitSet tempMBS1 = new MyBitSet();
+			this.vecLivenessPerStmt.setElementAt(tempMBS, i);
+			this.vecDefInfoPerStmt.setElementAt(tempMBS1, i);
+		}
 		this.useSet = new MyBitSet();
 		this.defSet = new MyBitSet();
-		for(int i = this.vecStatement.size(); i >= 0; i--)
+		for(int i = this.vecStatement.size() - 1; i >= 0; i--)
 		{
 			Vector<TempInfo> statement = this.vecStatement.elementAt(i);
 			for(int j = 0; j < statement.size(); j++)
 			{
-				this.update_defSet_useSet(statement.elementAt(j));
+				MyBitSet tempMBS = this.vecLivenessPerStmt.elementAt(i);
+				this.vecLivenessPerStmt.setElementAt(tempMBS.my_or(this.useSet), i);
+				this.update_DU_info(statement.elementAt(j), i);
 			}
 		}
 	}
 	
-	public void update_defSet_useSet(TempInfo v)
+	public void update_DU_info(TempInfo v, int idx)
 	{
 		if(v.is_use())
 		{
 			this.useSet.set(v.get_temp_num());
+			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num());//ppt-kanga P.12
 		}
 		else
 		{
+			this.vecLivenessPerStmt.elementAt(idx).set(v.get_temp_num(), false);//ppt-kanga P.12
+			this.vecDefInfoPerStmt.elementAt(idx).set(v.get_temp_num());//record def info
 			this.useSet.set(v.get_temp_num(), false);
 			this.defSet.set(v.get_temp_num());
 		}

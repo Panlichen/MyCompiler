@@ -121,19 +121,31 @@ public class FlowGraph {
 		{
 			BasicBlock bb = changed.poll();
 			MyBitSet out = new MyBitSet();
-			MyBitSet in = bb.get_inSet();
+			MyBitSet oldIn = bb.get_inSet();
 			for(int i = 0; i < bb.getVecSuccessor().size(); i++)
 			{
 				out = out.my_or(bb.getVecSuccessor().elementAt(i).get_inSet());
 			}
 			bb.set_outSet(out);
-			bb.set_inSet(in.my_or(bb.get_outSet().my_andNot(bb.get_defSet())));
-			if(!in.equals(bb.get_inSet()))
+			bb.set_inSet(bb.get_useSet().my_or(bb.get_outSet().my_andNot(bb.get_defSet())));
+			if(!oldIn.equals(bb.get_inSet()))
 			{
 				for(int i = 0; i < bb.getVecPredecessor().size(); i++)
 				{
 					changed.add(bb.getVecPredecessor().elementAt(i));
 				}
+			}
+		}
+		
+		//then update every stmt's use info
+		for(int i = 0; i < this.vecBB.size(); i++)
+		{
+			BasicBlock tempBB = this.vecBB.elementAt(i);
+			MyBitSet tempOut = tempBB.get_outSet();
+			for(int j = 0; j < tempBB.vecLivenessPerStmt.size(); i++)
+			{
+				MyBitSet tempMBS = tempBB.vecLivenessPerStmt.elementAt(j);
+				tempBB.vecLivenessPerStmt.setElementAt(tempMBS.my_or(tempOut), j);
 			}
 		}
 	}
