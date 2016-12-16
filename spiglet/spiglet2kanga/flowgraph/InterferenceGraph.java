@@ -22,7 +22,6 @@ public class InterferenceGraph {
 	
 	public InterferenceGraph(FlowGraph flowGraph)
 	{
-		this.edgeRecord = new HashSet<String>();
 		this.stack = new Stack<Integer>();
 		this.vecAdjacentTable = new Vector<Vector<Integer>>();
 		for(int i = 0; i < MAX_NUM_BB; i++)
