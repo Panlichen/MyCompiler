@@ -16,8 +16,8 @@ public class InterferenceGraph {
 	
 	private int maxCalledNumPara;
 	private int numSpilled;
-	private MyBitSet sReg;
-	private MyBitSet tReg;
+	private int numTReg;
+	private int numSReg;
 	private int numMorePara;
 	
 	public InterferenceGraph(FlowGraph flowGraph)
@@ -32,8 +32,8 @@ public class InterferenceGraph {
 		this.arrayColorPerTemp = new int[MAX_NUM_BB];
 		this.arrayLocationPerTemp = new int[MAX_NUM_BB];
 		this.arrayUsedPerTemp = new boolean[MAX_NUM_BB];
-		this.sReg = new MyBitSet();
-		this.tReg = new MyBitSet();
+		this.numTReg = 0;
+		this.numSReg = 0;
 		
 		this.maxCalledNumPara = flowGraph.get_maxCalledNumPara();
 		
@@ -46,6 +46,8 @@ public class InterferenceGraph {
 				this.add_interference(tempBB.vecLivenessPerStmt.elementAt(j), tempBB.vecDefInfoPerStmt.elementAt(j));
 			}
 		}
+		this.do_color();
+		this.do_reg_distribution();
 	}
 	
 	public void add_interference(MyBitSet livenessInfo, MyBitSet defInfo)
@@ -81,39 +83,144 @@ public class InterferenceGraph {
 		this.arrayDegreePerTemp[b]++;
 	}
 	
+	private void do_color()
+	{
+		for(int i = 0; i <= N; i++)
+		{
+			this.arrayUsedPerTemp[i] = false;
+		}
+		for(int i = 0; i <= N; i++)
+		{
+			int degree = -1, idx = -1, realMax = -1, realIdx = -1;
+			for(int j = 0; j <= N; j++)
+			{
+				if(!this.arrayUsedPerTemp[j])
+				{
+					if(this.arrayDegreePerTemp[i] > realMax)
+					{
+						realMax = this.arrayDegreePerTemp[j];
+						realMax = j;
+					}
+					if(this.arrayDegreePerTemp[i] < MAX_COLOR && this.arrayDegreePerTemp[j] > degree)
+					{
+						degree = this.arrayDegreePerTemp[j];
+						idx = j;
+					}
+				}
+			}
+			if(degree == -1)
+			{
+				this.arrayUsedPerTemp[realIdx] = true;
+				this.arrayColorPerTemp[realIdx] = -1;
+				this.delete_node(realIdx);
+				this.numSpilled++;
+			}
+			else
+			{
+				this.arrayUsedPerTemp[idx] = true;
+				this.stack.push(idx);
+				this.delete_node(idx);
+			}
+		}
+	}
 	
+	private void delete_node(int idx)
+	{
+		Vector<Integer> tempVec = this.vecAdjacentTable.elementAt(idx);
+		for(int i = 0; i < tempVec.size(); i++)
+		{
+			if(!this.arrayUsedPerTemp[tempVec.elementAt(i)])
+			{
+				this.delete_edge(idx, tempVec.elementAt(i));
+			}
+		}
+	}
 	
+	private void delete_edge(int i, int j)
+	{
+		this.arrayDegreePerTemp[i]--;
+		this.arrayDegreePerTemp[j]--;
+	}
 	
+	private void do_reg_distribution()
+	{
+		while(!stack.empty())
+		{
+			int tempNum = this.stack.pop();
+			MyBitSet tempMBS = new MyBitSet();
+			Vector<Integer> vecAdj = this.vecAdjacentTable.elementAt(tempNum);
+			for(int i = 0; i < vecAdj.size(); i++)
+			{
+				int adj = vecAdj.elementAt(i);
+				if(this.arrayColorPerTemp[adj] > 0)
+				{
+					tempMBS.set(this.arrayColorPerTemp[adj]);
+				}
+			}
+			this.arrayColorPerTemp[tempNum] = tempMBS.nextClearBit(1);
+			if(this.arrayColorPerTemp[tempNum] <= 10)
+			{
+				this.numTReg++;
+			}
+			else
+			{
+				this.numSReg++;
+			}
+		}
+		int cnt = 0;
+		for(int i = 0; i < N; i ++)
+		{
+			if(this.arrayColorPerTemp[i] == -1)
+			{
+				this.arrayLocationPerTemp[i] = cnt++;
+			}
+		}
+		//
+	}
 	
+	public void set_numMorePara(int i)
+	{
+		this.numMorePara = i;
+	}
+	public int get_numMorePara()
+	{
+		return this.numMorePara;
+	}
 	
+	public int get_maxCalledNumPara()
+	{
+		return this.maxCalledNumPara;
+	}
 	
+	public int get_numSpilled()
+	{
+		return this.numSpilled;
+	}
 	
+	public int get_numTReg()
+	{
+		return this.numTReg;
+	}
 	
+	public int get_numSReg()
+	{
+		return this.numSReg;
+	}
 	
+	public boolean isSpilled(int tempNum)
+	{
+		return (this.arrayColorPerTemp[tempNum] == -1);
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public int getColor(int tempNum)
+	{
+		if(this.arrayColorPerTemp[tempNum] == -1)
+		{
+			return this.numMorePara + this.numTReg + this.numSReg + this.arrayLocationPerTemp[tempNum];
+		}
+		else
+		{
+			return this.getColor(tempNum);
+		}
+	}
 }
