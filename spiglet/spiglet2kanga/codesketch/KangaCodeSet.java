@@ -71,23 +71,36 @@ public class KangaCodeSet{
 	public void print_all(OutputStream out)
 	{
 		boolean needTab = false;
+		boolean needSpace = false;
 		String huge = new String();
 		for(int i = 0; i < this.codeSet.size(); i++)
 		{
 			if(this.codeSet.elementAt(i).toString().equals("END"))
 				needTab = false;
+			if(this.codeSet.elementAt(i).isLabel())
+			{
+				needTab = false;
+				needSpace = true;
+			}
 			if(needTab)
 				huge += "\t";
+			if(needSpace)
+				huge += "  ";
 		
 			huge += this.codeSet.elementAt(i) + "\n";
 			
 			if(this.codeSet.elementAt(i).toString().endsWith("]"))
 				needTab = true;
+			if(this.codeSet.elementAt(i).isLabel())
+			{
+				needTab = true;
+				needSpace = false;
+			}
 		}
 		try
 		{
-			/*
-			File file = new File("/Users/myles/PKU/CompilierPractice/testCasesSpiglet/TreeVisitor.spg");
+			
+			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\QuickSort.kg");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
             BufferedWriter bWriter = new BufferedWriter(osWriter);
@@ -96,9 +109,9 @@ public class KangaCodeSet{
 			
 			
 			bWriter.close();
-			*/
+			
 			out.write(huge.getBytes());
-			System.out.println(huge);
+			//System.out.println(huge);
 		}
 		catch(Exception e){}
 	}

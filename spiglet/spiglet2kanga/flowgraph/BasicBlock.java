@@ -123,8 +123,8 @@ public class BasicBlock {
 		{
 			MyBitSet tempMBS = new MyBitSet();
 			MyBitSet tempMBS1 = new MyBitSet();
-			this.vecLivenessPerStmt.setElementAt(tempMBS, i);
-			this.vecDefInfoPerStmt.setElementAt(tempMBS1, i);
+			this.vecLivenessPerStmt.addElement(tempMBS);
+			this.vecDefInfoPerStmt.addElement(tempMBS1);
 		}
 		this.useSet = new MyBitSet();
 		this.defSet = new MyBitSet();

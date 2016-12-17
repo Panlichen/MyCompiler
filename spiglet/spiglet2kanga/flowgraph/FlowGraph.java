@@ -16,7 +16,7 @@ public class FlowGraph {
 	{
 		this.exitTemp = exitTemp;
 		this.numPara = numPara;
-		this.maxCalledNumPara = -1;
+		this.maxCalledNumPara = 0;
 		this.vecBB = new Vector<BasicBlock>();
 		this.isLinkedToPredecessor = new Vector<Boolean>();
 		this.lableBBMap = new Hashtable<String, BasicBlock>();
@@ -52,8 +52,11 @@ public class FlowGraph {
 	
 	public void add_BB(BasicBlock bb, boolean isLinkedToPre)
 	{
-		this.vecBB.addElement(bb);
-		this.isLinkedToPredecessor.addElement(isLinkedToPre);
+		if(!this.vecBB.contains(bb))
+		{
+			this.vecBB.addElement(bb);
+			this.isLinkedToPredecessor.addElement(isLinkedToPre);
+		}
 	}
 	
 	public BasicBlock BB_get(String label)
@@ -95,6 +98,7 @@ public class FlowGraph {
 		}
 		for(int i = 0; i < this.vecBB.size(); i++)
 		{
+			//System.out.println(this.vecBB.elementAt(i).get_block_label());
 			this.vecBB.elementAt(i).init_inSet_outSet();
 			this.vecBB.elementAt(i).make_defSet_useSet();
 		}
@@ -142,7 +146,7 @@ public class FlowGraph {
 		{
 			BasicBlock tempBB = this.vecBB.elementAt(i);
 			MyBitSet tempOut = tempBB.get_outSet();
-			for(int j = 0; j < tempBB.vecLivenessPerStmt.size(); i++)
+			for(int j = 0; j < tempBB.vecLivenessPerStmt.size(); j++)
 			{
 				MyBitSet tempMBS = tempBB.vecLivenessPerStmt.elementAt(j);
 				int defIdx = tempBB.vecDefInfoPerStmt.elementAt(j).nextSetBit(0);

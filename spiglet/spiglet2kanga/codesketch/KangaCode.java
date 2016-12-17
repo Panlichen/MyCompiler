@@ -13,4 +13,9 @@ public class KangaCode{
 	{
 		return this.code;
 	}
+	
+	public boolean isLabel()
+	{
+		return this.code.contains("_") && !this.code.contains(" ");
+	}
 }

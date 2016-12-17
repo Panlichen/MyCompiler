@@ -5,8 +5,6 @@ import java.util.*;
 public class InterferenceGraph {
 	private static int MAX_NUM_BB = 10000;
 	private static int MAX_COLOR = 18;
-	private int N = 0;
-	
 	private Vector<Vector<Integer>> vecAdjacentTable;
 	private Stack<Integer> stack;
 	private int[] arrayDegreePerTemp;
@@ -16,12 +14,24 @@ public class InterferenceGraph {
 	
 	private int maxCalledNumPara;
 	private int numSpilled;
+	private MyBitSet tReg;
 	private int numTReg;
+	private MyBitSet sReg;
 	private int numSReg;
 	private int numMorePara;
 	
+	private MyBitSet tempIdxUsed;
+	
+	public MyBitSet get_tempIdxUsed()
+	{
+		return this.tempIdxUsed;
+	}
+	
 	public InterferenceGraph(FlowGraph flowGraph)
 	{
+		this.tReg = new MyBitSet();
+		this.sReg = new MyBitSet();
+		this.tempIdxUsed = new MyBitSet();
 		this.stack = new Stack<Integer>();
 		this.vecAdjacentTable = new Vector<Vector<Integer>>();
 		for(int i = 0; i < MAX_NUM_BB; i++)
@@ -46,15 +56,21 @@ public class InterferenceGraph {
 				this.add_interference(tempBB.vecLivenessPerStmt.elementAt(j), tempBB.vecDefInfoPerStmt.elementAt(j));
 			}
 		}
+		
 		this.do_color();
 		this.do_reg_distribution();
 	}
 	
 	public void add_interference(MyBitSet livenessInfo, MyBitSet defInfo)
 	{
-		int defIdx = livenessInfo.nextSetBit(0);
+		int defIdx = defInfo.nextSetBit(0);
+		if(defIdx >= 0)
+		{
+			this.tempIdxUsed.set(defIdx);
+		}
 		for(int i = livenessInfo.nextSetBit(0); i >= 0; i = livenessInfo.nextSetBit(i + 1))
 		{
+			this.tempIdxUsed.set(i);
 			for (int j = livenessInfo.nextSetBit(i + 1); j >= 0; j = livenessInfo.nextSetBit(j + 1))
 			{
 				if(i != j)
@@ -69,14 +85,7 @@ public class InterferenceGraph {
 	{
 		if(this.vecAdjacentTable.elementAt(a).contains(b))
 			return;
-		if(a > this.N)
-		{
-			this.N = a;
-		}
-		if(b > this.N)
-		{
-			this.N = b;
-		}
+
 		this.vecAdjacentTable.elementAt(a).addElement(b);
 		this.vecAdjacentTable.elementAt(b).addElement(a);
 		this.arrayDegreePerTemp[a]++;
@@ -85,23 +94,23 @@ public class InterferenceGraph {
 	
 	private void do_color()
 	{
-		for(int i = 0; i <= N; i++)
+		for(int i = this.tempIdxUsed.nextSetBit(0); i >= 0; i = this.tempIdxUsed.nextSetBit(i + 1))
 		{
 			this.arrayUsedPerTemp[i] = false;
 		}
-		for(int i = 0; i <= N; i++)
+		for(int i = this.tempIdxUsed.nextSetBit(0); i >= 0; i = this.tempIdxUsed.nextSetBit(i + 1))
 		{
 			int degree = -1, idx = -1, realMax = -1, realIdx = -1;
-			for(int j = 0; j <= N; j++)
+			for(int j = this.tempIdxUsed.nextSetBit(0); j >= 0; j = this.tempIdxUsed.nextSetBit(j + 1))
 			{
 				if(!this.arrayUsedPerTemp[j])
 				{
-					if(this.arrayDegreePerTemp[i] > realMax)
+					if(this.arrayDegreePerTemp[j] > realMax)
 					{
 						realMax = this.arrayDegreePerTemp[j];
-						realMax = j;
+						realIdx = j;
 					}
-					if(this.arrayDegreePerTemp[i] < MAX_COLOR && this.arrayDegreePerTemp[j] > degree)
+					if(this.arrayDegreePerTemp[j] < MAX_COLOR && this.arrayDegreePerTemp[j] > degree)
 					{
 						degree = this.arrayDegreePerTemp[j];
 						idx = j;
@@ -160,15 +169,19 @@ public class InterferenceGraph {
 			this.arrayColorPerTemp[tempNum] = tempMBS.nextClearBit(1);
 			if(this.arrayColorPerTemp[tempNum] <= 10)
 			{
-				this.numTReg++;
+				//this.numTReg++;
+				this.tReg.set(this.arrayColorPerTemp[tempNum]);
 			}
 			else
 			{
-				this.numSReg++;
+				//this.numSReg++;
+				this.sReg.set(this.arrayColorPerTemp[tempNum]);
 			}
 		}
+		this.numTReg = this.tReg.cardinality();
+		this.numSReg = this.sReg.cardinality();
 		int cnt = 0;
-		for(int i = 0; i < N; i ++)
+		for(int i = this.tempIdxUsed.nextSetBit(0); i >= 0; i = this.tempIdxUsed.nextSetBit(i + 1))
 		{
 			if(this.arrayColorPerTemp[i] == -1)
 			{
@@ -220,7 +233,7 @@ public class InterferenceGraph {
 		}
 		else
 		{
-			return this.getColor(tempNum);
+			return this.arrayColorPerTemp[tempNum];
 		}
 	}
 }

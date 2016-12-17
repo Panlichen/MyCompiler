@@ -50,7 +50,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 			}
 			ret.set_reg_address(reg);
 			ret.set_exp_address(reg);
-			ret.set_memory_address(null);
+			//ret.set_memory_address(null);
 		}
 		return ret;
 	}
@@ -114,12 +114,17 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 	{
 		KangaCodeSet ret = new KangaCodeSet();
 		this.curIG = new InterferenceGraph(this.vecFG.elementAt(curFGIdx));
+		
+		//System.out.println(this.curIG.get_numSpilled());
+		//System.out.println(this.curIG.get_numTReg());
+		//System.out.println(this.curIG.get_numSReg());
+		
 		int numStackSlot = this.curIG.get_numSpilled() + this.curIG.get_numTReg() + this.curIG.get_numSReg();
 		ret.emit("MAIN\t[ 0 ] [ " + numStackSlot + " ] [ " + this.curIG.get_maxCalledNumPara() +" ]");
 		this.curMethodLabel = "MAIN";
 		KangaCodeSet sl = n.f1.accept(this);
 		ret.merge_code_set(sl);
-		ret.emit("EMD");
+		ret.emit("END");
 		ret.print_all(out);
 		
 		this.curFGIdx++;
@@ -151,7 +156,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 		int morePara = (numPara > 4) ? (numPara - 4) : 0;
 		this.curIG.set_numMorePara(morePara);
 		int numStackSlot = morePara + this.curIG.get_numSReg() + this.curIG.get_numTReg() + this.curIG.get_numSpilled();
-		ret.emit(this.curMethodLabel + "\t[" + numPara + "] [" + numStackSlot + " ] [ " + this.curIG.get_maxCalledNumPara() + " ]");
+		ret.emit(this.curMethodLabel + "\t[ " + numPara + " ] [ " + numStackSlot + " ] [ " + this.curIG.get_maxCalledNumPara() + " ]");
 		
 		for(int i = 0; i < this.curIG.get_numSReg(); i++)//callee save
 		{
@@ -160,22 +165,25 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 		
 		for(int i = 0; i < numPara; i++)//the idx of a para is exactly the "temp num" of the temp variable
 		{
-			if(i < 4)
+			if(this.curIG.get_tempIdxUsed().get(i))
 			{
-				KangaCodeSet tempInfo = this.get_temp_info(i);
-				ret.emit("MOVE " + tempInfo.get_reg_address() + " a" + i);
-				if(tempInfo.get_memory_address() != null)
+				if(i < 4)
 				{
-					ret.emit("ASTORE " + tempInfo.get_memory_address() + " " + tempInfo.get_reg_address());//here the reg_add should be v1
+					KangaCodeSet tempInfo = this.get_temp_info(i);
+					ret.emit("MOVE " + tempInfo.get_reg_address() + " a" + i);
+					if(tempInfo.get_memory_address() != null)
+					{
+						ret.emit("ASTORE " + tempInfo.get_memory_address() + " " + tempInfo.get_reg_address());//here the reg_add should be v1
+					}
 				}
-			}
-			else
-			{
-				KangaCodeSet tempInfo = this.get_temp_info(i);
-				ret.emit("ALOAD " + tempInfo.get_reg_address() + " SPILLEDARG " + (i - 4));
-				if(tempInfo.get_memory_address() != null)
+				else
 				{
-					ret.emit("ASTORE " + tempInfo.get_memory_address() + " " + tempInfo.get_reg_address());
+					KangaCodeSet tempInfo = this.get_temp_info(i);
+					ret.emit("ALOAD " + tempInfo.get_reg_address() + " SPILLEDARG " + (i - 4));
+					if(tempInfo.get_memory_address() != null)
+					{
+						ret.emit("ASTORE " + tempInfo.get_memory_address() + " " + tempInfo.get_reg_address());
+					}
 				}
 			}
 		}
@@ -240,7 +248,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 		KangaCodeSet ret = new KangaCodeSet();
 		KangaCodeSet temp = n.f1.accept(this);
 		ret.merge_code_set(temp);
-		ret.emit("CJUMP " + temp.get_reg_address() + " " + this.curMethodLabel + "_" + n.f2.f0.tokenImage);
+		ret.emit("CJUMP " + temp.get_reg_address() + " " + this.curMethodLabel + n.f2.f0.tokenImage);
 		return ret;
 	}
 	
@@ -251,7 +259,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 	public KangaCodeSet visit(JumpStmt n)
 	{
 		KangaCodeSet ret = new KangaCodeSet();
-		ret.emit("JUMP " + this.curMethodLabel + "_" + n.f1.f0.tokenImage);
+		ret.emit("JUMP " + this.curMethodLabel + n.f1.f0.tokenImage);
 		return ret;
 	}
 	
@@ -383,7 +391,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 			ret.merge_code_set(this.vecRecordTemp.elementAt(i));
 			if(i < 4)
 			{
-				ret.emit("MOVE a" + i + this.vecRecordTemp.elementAt(i).get_reg_address());
+				ret.emit("MOVE a" + i + " " + this.vecRecordTemp.elementAt(i).get_reg_address());
 			}
 			else
 			{
@@ -397,9 +405,9 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 			ret.emit("ALOAD t" + i + " SPILLEDARG " + (this.curIG.get_numMorePara() + this.curIG.get_numSReg() + i));
 		}
 				
-		ret.set_reg_address(null);
+		//ret.set_reg_address(null);
 		ret.set_exp_address("v0");
-		ret.set_memory_address(null);
+		//ret.set_memory_address(null);
 		return ret;
 	}
 	
@@ -475,7 +483,7 @@ public class VisitorTranslateSP2K extends GJNoArguDepthFirst<KangaCodeSet>{
 		KangaCodeSet ret = new KangaCodeSet();
 		if(this.endOfStatement)
 		{
-			ret.emit(this.curMethodLabel + "_" + n.f0.tokenImage);
+			ret.emit(this.curMethodLabel + n.f0.tokenImage);
 		}
 		else
 		{

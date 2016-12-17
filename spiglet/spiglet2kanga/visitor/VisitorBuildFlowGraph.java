@@ -14,8 +14,8 @@ public class VisitorBuildFlowGraph extends DepthFirstVisitor{
 	public TempInfo curTI;
 	public int curNumPara;
 	public boolean isLinkedToPre = false;
-	public boolean needToBuildBB = false;
-	public boolean endOfStmt = true;
+	public boolean needToBuildBB = false;//for Stmt's visitor to build a new BB
+	public boolean endOfStmt = true;//for Label's Visitor
 	public int needToRecord = 0;
 	
 	public Vector<FlowGraph> get_vecFlowGraph()
@@ -35,6 +35,7 @@ public class VisitorBuildFlowGraph extends DepthFirstVisitor{
 		curFG = new FlowGraph(null, 0);
 		this.needToBuildBB = true;
 		n.f1.accept(this);
+		//this.curFG.add_BB(curBB, isLinkedToPre);
 		this.vecFlowGraph.addElement(curFG);
 		n.f3.accept(this);
 	}
@@ -77,7 +78,7 @@ public class VisitorBuildFlowGraph extends DepthFirstVisitor{
 		if(this.needToBuildBB)
 		{
 			this.curBB = new BasicBlock();
-			this.curFG.add_BB(curBB, this.isLinkedToPre);
+			this.curFG.add_BB(curBB, this.isLinkedToPre);//add the bb to the fg when the bb is built
 			this.needToBuildBB = false;
 			this.isLinkedToPre = true;
 		}
@@ -330,7 +331,7 @@ public class VisitorBuildFlowGraph extends DepthFirstVisitor{
 	}
 	
 	/**
-	* f0 -> <INTEGER_LITERAL>
+	* f0 -> <IDENTIFIER>
 	*/
 	public void visit(Label n)
 	{
