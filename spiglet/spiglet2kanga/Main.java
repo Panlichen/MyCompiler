@@ -15,8 +15,8 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		//Node root = new SpigletParser(System.in).Goal();
-    		Node root = new SpigletParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesSpiglet\\test73.spg")).Goal();
+    		Node root = new SpigletParser(System.in).Goal();
+    		//Node root = new SpigletParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesSpiglet\\Factorial.spg")).Goal();
 
     		VisitorBuildFlowGraph vbfg = new VisitorBuildFlowGraph();
     		
