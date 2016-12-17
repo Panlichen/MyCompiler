@@ -39,8 +39,8 @@ public class VisitorBuildSymbolTableM2SP extends VisitorBuildSymbolTable{
     	mainMethodInfo.set_id_info(new Identifier(n.f6));
     	mainMethodInfo.set_rtn_type("void");
     	
-    	mainClassInfo.m_put_m2sp(mainMethodInfo.get_name(), mainMethodInfo);
-    	mainClassInfo.m_zone_put(mainMethodInfo.get_name(), mainClassName + "_" + mainMethodInfo.get_name());
+    	//mainClassInfo.m_put_m2sp(mainMethodInfo.get_name(), mainMethodInfo);
+    	//mainClassInfo.m_zone_put(mainMethodInfo.get_name(), mainClassName + "_" + mainMethodInfo.get_name());
     	
     	argu.c_put_m2sp(mainClassInfo.get_name(), mainClassInfo);
     	

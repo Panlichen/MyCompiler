@@ -100,7 +100,7 @@ public class KangaCodeSet{
 		try
 		{
 			
-			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\QuickSort.kg");
+			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\test73.kg");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
             BufferedWriter bWriter = new BufferedWriter(osWriter);
