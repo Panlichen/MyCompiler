@@ -5,22 +5,12 @@ import java.io.*;
 
 public class MIPSCodeSet{
 	private Vector<MIPSCode> codeSet;
-	private MIPSCode regAddress;
 	private MIPSCode expAddress;
 	private String expType;
 	
 	public MIPSCodeSet()
 	{
 		this.codeSet = new Vector<MIPSCode>();
-	}
-	
-	public void set_reg_address(String address)
-	{
-		this.regAddress = new MIPSCode(address);
-	}
-	public MIPSCode get_reg_address()
-	{
-		return this.regAddress;
 	}
 	
 	public void set_exp_address(String address)
@@ -72,12 +62,31 @@ public class MIPSCodeSet{
 	{
 
 		String huge = new String();
+		boolean needTab = false;
 		
+		for(int i = 0; i < this.codeSet.size(); i++)
+		{
+			if(this.codeSet.elementAt(i).toString().contains(":"))
+			{
+				needTab = false;
+			}
+			else
+			{
+				needTab = true;
+			}
+			if(needTab)
+			{
+				huge += '\t';
+			}
+			huge += this.codeSet.elementAt(i) + "\n";
+		}
 
+		huge += "\n";
+		
 		try
 		{
-			/*
-			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\trivial1.kg");
+			
+			File file = new File("D:\\PKU\\compile_practice\\testCasesMIPS\\test01.asm");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
             BufferedWriter bWriter = new BufferedWriter(osWriter);
@@ -86,9 +95,9 @@ public class MIPSCodeSet{
 			
 			
 			bWriter.close();
-			*/
+			
 			out.write(huge.getBytes());
-			System.out.println(huge);
+			//System.out.println(huge);
 		}
 		catch(Exception e){}
 	}
