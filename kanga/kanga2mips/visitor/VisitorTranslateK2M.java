@@ -104,7 +104,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 		
 		ret.emit("lw $ra, -4($fp)");
 		ret.emit("addu $sp, $sp, " + 4 * (totalKStack + maxCalledPara + 2));
-		ret.emit("jr $ra");
+		ret.emit("j _exit");
 		ret.print_all(out);
 		
 		n.f12.accept(this);
@@ -129,7 +129,8 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 		rest.emit("_error:");
 		rest.emit("la $a0, err_info");
 		rest.emit("li $v0, 4");
-		rest.emit("syscall");
+		rest.emit("syscall\n");
+		rest.emit("_exit:");
 		rest.emit("li $v0, 10");
 		rest.emit("syscall\n");
 		
@@ -193,7 +194,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 		ret.merge_code_set(sl);
 		
 		ret.emit("lw $ra, -4($fp)");
-		ret.emit("lw $fp, -4($fp)");
+		ret.emit("lw $fp, -8($fp)");//!!!!!!!!!!!!!!!!!!!!!!!!!!SB
 		ret.emit("addu $sp, $sp, " + (4 * (totalKStack - numPara + maxCalledPara + 2)));
 		ret.emit("jr $ra");
 		
@@ -280,7 +281,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 		String regBase = n.f1.f0.choice.toString();
 		String regData = n.f3.f0.choice.toString();
 		int iDisp = Integer.parseInt( n.f2.f0.tokenImage);
-		String disp = iDisp != 0 ? "" + (4 * iDisp) : "";
+		String disp = iDisp != 0 ? "" + iDisp : "";//the disp has been multiplied by 4
 		
 		ret.emit("sw $" + regData + ", " + disp + "($" + regBase + ")");
 		return ret;
@@ -298,7 +299,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 		String regTgt = n.f1.f0.choice.toString();
 		String regBase  = n.f2.f0.choice.toString();
 		int iDisp = Integer.parseInt( n.f3.f0.tokenImage);
-		String disp = iDisp != 0 ? "" + (4 * iDisp)  : "";
+		String disp = iDisp != 0 ? "" + iDisp  : "";
 		ret.emit("lw $" + regTgt + ", " + disp + "($" + regBase + ")");
 		return ret;
 	}
@@ -510,7 +511,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 				if(exp.get_expType().equals("int"))
 				{
 					ret.emit("li $v0, " + exp.get_exp_address());
-					ret.emit("mul $v0, " + reg + ", $v0");
+					ret.emit("mul $v0, $" + reg + ", $v0");
 				}
 				else
 				{
@@ -520,7 +521,7 @@ public class VisitorTranslateK2M extends GJNoArguDepthFirst<MIPSCodeSet>{
 			}
 		}
 		ret.set_expType("register");
-		ret.set_exp_address("v0");
+		ret.set_exp_address("$v0");
 		return ret;
 	}
 	

@@ -111,7 +111,7 @@ public class KangaCodeSet{
 			bWriter.close();
 			*/
 			out.write(huge.getBytes());
-			System.out.println(huge);
+			//System.out.println(huge);
 		}
 		catch(Exception e){}
 	}

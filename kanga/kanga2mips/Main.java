@@ -14,8 +14,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		try {
-			//Node root = new KangaParser(System.in).Goal();
-			Node root = new KangaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesKanga\\test01.kg")).Goal();
+			Node root = new KangaParser(System.in).Goal();
+			//Node root = new KangaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesKanga\\QuickSort.kg")).Goal();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			VisitorTranslateK2M vtkm = new VisitorTranslateK2M(out);
 			root.accept(vtkm);
