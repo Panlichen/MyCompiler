@@ -52,7 +52,7 @@ public class EntryInfoMethodM2SP extends EntryInfoMethod{
 	
 	public void add_parameter(String name)
 	{
-		this.localDefinedVariables.add(name);
+		this.parameters.add(name);
 	}
 	public Vector<String> get_all_parameters()
 	{

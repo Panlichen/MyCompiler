@@ -14,9 +14,10 @@ public class VisitorCheckIncompatible extends GJDepthFirst<String, EntryInfo>{
 		{
 			return false;
 		}
-		if((argu.is_class_type(type1) && !argu.is_class_type(type2)) || (!argu.is_class_type(type1) && argu.is_class_type(type2)))
+		if((argu.is_class_type(type1) && !argu.is_class_type(type2))
+				|| (!argu.is_class_type(type1) && argu.is_class_type(type2)))
 			return false;
-		else if(argu.is_class_type(type1) && argu.is_class_type(type2))//¿ÉÒÔ°Ñ×ÓÀàµÄ¶ÔÏó¸³¸ø¸¸Àà¡£²»»áÓÃÓ¢ÎÄËµ¡£¡£type1 can be father of type2
+		else if(argu.is_class_type(type1) && argu.is_class_type(type2))//ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ó¸³¸ï¿½ï¿½ï¿½ï¿½à¡£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¢ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½type1 can be father of type2
 		{
 			String name = type2;
 			while(name != null)
