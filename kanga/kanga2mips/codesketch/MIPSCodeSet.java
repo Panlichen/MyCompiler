@@ -85,7 +85,7 @@ public class MIPSCodeSet{
 		
 		try
 		{
-			/*
+			
 			File file = new File("D:\\PKU\\compile_practice\\testCasesMIPS\\Factorial.asm");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
@@ -95,9 +95,9 @@ public class MIPSCodeSet{
 			
 			
 			bWriter.close();
-			*/
+			
 			out.write(huge.getBytes());
-			System.out.println(huge);
+			//System.out.println(huge);
 		}
 		catch(Exception e){}
 	}

@@ -167,7 +167,7 @@ public class PigletCodeSet extends PigletCodeAbstract{
 		try
 		{
 			/*
-			File file = new File("D:\\PKU\\compile_practice\\testCasesSpiglet\\test73.spg");
+			File file = new File("D:\\PKU\\compile_practice\\testCasesSpiglet\\BinaryTree.spg");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
             BufferedWriter bWriter = new BufferedWriter(osWriter);

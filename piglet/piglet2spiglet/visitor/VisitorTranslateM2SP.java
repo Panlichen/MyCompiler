@@ -677,6 +677,7 @@ public class VisitorTranslateM2SP extends GJDepthFirst<PigletCodeAbstract, Entry
 		PigletCodeSet ret = (PigletCodeSet) n.f0.accept(this, argu);
 		this.messageSendParasVecCodeSet.addElement(ret);
 		PigletCodeSet restCodeSet = (PigletCodeSet) n.f1.accept(this, argu);
+		ret.merge_code_set(restCodeSet);
 		return ret;
 	}
 	
