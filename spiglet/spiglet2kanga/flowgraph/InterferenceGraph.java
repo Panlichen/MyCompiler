@@ -59,6 +59,7 @@ public class InterferenceGraph {
 		
 		this.do_color();
 		this.do_reg_distribution();
+		//System.out.println("total spilled: " + numSpilled);
 	}
 	
 	public void add_interference(MyBitSet livenessInfo, MyBitSet defInfo)

@@ -23,8 +23,8 @@ public class Main {
 		try
 		{
 			//===========minijava -> spiglet==========
-			MiniJavaParser parser = new minijava.MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCasesWOTE\\Factorial.java"));
-			//MiniJavaParser parser = new minijava.MiniJavaParser(System.in);
+			//MiniJavaParser parser = new minijava.MiniJavaParser(new FileInputStream("D:\\PKU\\compile_practice\\testCaseFinal\\TreeVisitor.java"));
+			MiniJavaParser parser = new minijava.MiniJavaParser(System.in);
 			Goal rootMJ = parser.Goal();
 			ByteArrayOutputStream outMJ = new ByteArrayOutputStream();
 			SymbolTableM2SP topTable = new SymbolTableM2SP();

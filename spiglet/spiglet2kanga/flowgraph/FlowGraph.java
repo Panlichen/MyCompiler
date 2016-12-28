@@ -146,7 +146,7 @@ public class FlowGraph {
 		{
 			BasicBlock tempBB = this.vecBB.elementAt(i);
 			MyBitSet tempOut = tempBB.get_outSet();
-			for(int j = 0; j < tempBB.vecLivenessPerStmt.size(); j++)
+			for(int j = tempBB.vecLivenessPerStmt.size() - 1; j >= 0 ; j--)
 			{
 				MyBitSet tempMBS = tempBB.vecLivenessPerStmt.elementAt(j);
 				int defIdx = tempBB.vecDefInfoPerStmt.elementAt(j).nextSetBit(0);

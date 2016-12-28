@@ -99,8 +99,8 @@ public class KangaCodeSet{
 		}
 		try
 		{
-			
-			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\Factorial.kg");
+			/*
+			File file = new File("D:\\PKU\\compile_practice\\testCasesKanga\\QuickSort.kg");
 			FileOutputStream fos = new FileOutputStream(file, true);
 			OutputStreamWriter osWriter = new OutputStreamWriter(fos);
             BufferedWriter bWriter = new BufferedWriter(osWriter);
@@ -109,7 +109,7 @@ public class KangaCodeSet{
 			
 			
 			bWriter.close();
-			
+			*/
 			out.write(huge.getBytes());
 			//System.out.println(huge);
 		}
